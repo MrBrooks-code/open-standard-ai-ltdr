@@ -1,0 +1,2200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LTDR — Open Standard for Personal AI Assistants</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#1a1a1f;--ink-secondary:#52525b;--ink-tertiary:#a1a1aa;--ink-faint:#d4d4d8;
+  --paper:#fafaf9;--paper-warm:#f5f5f0;--paper-card:#ffffff;
+  --rule:rgba(0,0,0,0.08);--rule-heavy:rgba(0,0,0,0.15);
+  --accent:#1d4ed8;--accent-light:#dbeafe;--accent-text:#1e40af;
+  --listen:#0d9488;--listen-bg:#ccfbf1;--listen-border:#99f6e4;
+  --think:#7c3aed;--think-bg:#ede9fe;--think-border:#c4b5fd;
+  --do:#dc2626;--do-bg:#fee2e2;--do-border:#fca5a5;
+  --remember:#d97706;--remember-bg:#fef3c7;--remember-border:#fde68a;
+  --font-display:'Cormorant Garamond',Georgia,serif;
+  --font-body:'Outfit',system-ui,sans-serif;
+  --font-mono:'JetBrains Mono','Menlo',monospace;
+  --radius:8px;--radius-lg:14px;
+}
+html{font-family:var(--font-body);font-size:17px;line-height:1.75;color:var(--ink);background:var(--paper);scroll-behavior:smooth;-webkit-font-smoothing:antialiased}
+body{min-height:100vh}
+
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--ink-faint);border-radius:3px}
+
+/* ── Layout ── */
+.page{max-width:820px;margin:0 auto;padding:0 2rem 6rem}
+
+/* ── Hero ── */
+.hero{padding:5rem 0 3.5rem;border-bottom:1px solid var(--rule-heavy)}
+.hero-version{font-family:var(--font-mono);font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent-text);margin-bottom:1.5rem;display:inline-block;background:var(--accent-light);padding:4px 12px;border-radius:4px}
+.hero h1{font-family:var(--font-display);font-size:clamp(2.8rem,6vw,4.2rem);font-weight:400;line-height:1.1;letter-spacing:-0.03em;margin-bottom:1rem}
+.hero h1 em{font-style:italic;color:var(--accent-text)}
+.hero-sub{font-size:1.15rem;color:var(--ink-secondary);max-width:640px;line-height:1.7;font-weight:300}
+.hero-meta{margin-top:2rem;display:flex;gap:2rem;flex-wrap:wrap;font-size:13px;color:var(--ink-tertiary);font-family:var(--font-mono)}
+
+/* ── Section ── */
+.phase{padding:4rem 0 2rem;border-bottom:1px solid var(--rule)}
+.phase:last-of-type{border-bottom:none}
+.phase-tag{font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;padding:5px 12px;border-radius:4px;display:inline-block;margin-bottom:1.5rem}
+.tag-listen{color:var(--listen);background:var(--listen-bg)}
+.tag-think{color:var(--think);background:var(--think-bg)}
+.tag-do{color:var(--do);background:var(--do-bg)}
+.tag-remember{color:var(--remember);background:var(--remember-bg)}
+.tag-standard{color:var(--accent-text);background:var(--accent-light)}
+.phase h2{font-family:var(--font-display);font-size:2.2rem;font-weight:400;line-height:1.2;margin-bottom:0.5rem}
+.phase h2 em{font-style:italic}
+.phase-desc{color:var(--ink-secondary);font-size:1rem;margin-bottom:2rem;max-width:680px;font-weight:300}
+
+h3{font-family:var(--font-body);font-size:1.1rem;font-weight:600;margin:2.5rem 0 0.75rem;color:var(--ink)}
+h4{font-family:var(--font-body);font-size:0.95rem;font-weight:600;margin:1.5rem 0 0.5rem}
+
+p{margin-bottom:1rem}
+p code{font-family:var(--font-mono);font-size:0.82em;background:var(--paper-warm);padding:2px 6px;border-radius:3px;color:var(--accent-text)}
+
+/* ── Spec block ── */
+.spec{background:var(--paper-card);border:1px solid var(--rule);border-left:3px solid var(--accent);border-radius:0 var(--radius) var(--radius) 0;padding:1.5rem 1.75rem;margin:1.5rem 0;font-size:0.92rem;line-height:1.8}
+.spec-listen{border-left-color:var(--listen)}
+.spec-think{border-left-color:var(--think)}
+.spec-do{border-left-color:var(--do)}
+.spec-remember{border-left-color:var(--remember)}
+.spec h4{margin-top:0;font-family:var(--font-mono);font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-tertiary);margin-bottom:0.75rem}
+.spec p{margin-bottom:0.75rem}
+.spec p:last-child{margin-bottom:0}
+.spec ul{padding-left:1.5rem;margin-bottom:0.75rem}
+.spec li{margin-bottom:0.25rem}
+
+/* ── Code blocks ── */
+.code-group{margin:1.5rem 0}
+.code-tabs{display:flex;gap:0;border-bottom:1px solid var(--rule);margin-bottom:0}
+.code-tab{font-family:var(--font-mono);font-size:12px;font-weight:500;padding:8px 16px;cursor:pointer;color:var(--ink-tertiary);border-bottom:2px solid transparent;transition:all .2s;background:none;border-top:none;border-left:none;border-right:none;user-select:none}
+.code-tab:hover{color:var(--ink-secondary)}
+.code-tab.active{color:var(--accent-text);border-bottom-color:var(--accent)}
+.code-panel{display:none;background:var(--ink);color:#e2e8f0;padding:1.25rem 1.5rem;border-radius:0 0 var(--radius) var(--radius);overflow-x:auto;font-family:var(--font-mono);font-size:13px;line-height:1.8;tab-size:2;white-space:pre;word-wrap:break-word}
+.code-panel.active{display:block}
+.code-panel .kw{color:#c4b5fd}
+.code-panel .fn{color:#67e8f9}
+.code-panel .str{color:#fde68a}
+.code-panel .cm{color:#6b7280;font-style:italic}
+.code-panel .tp{color:#86efac}
+.code-panel .num{color:#fca5a5}
+.code-panel .op{color:#94a3b8}
+
+/* single code block (no tabs) */
+.code-single{background:var(--ink);color:#e2e8f0;padding:1.25rem 1.5rem;border-radius:var(--radius);overflow-x:auto;font-family:var(--font-mono);font-size:13px;line-height:1.8;margin:1rem 0;tab-size:2;white-space:pre;word-wrap:break-word}
+.code-single .kw{color:#c4b5fd}
+.code-single .fn{color:#67e8f9}
+.code-single .str{color:#fde68a}
+.code-single .cm{color:#6b7280;font-style:italic}
+.code-single .tp{color:#86efac}
+
+/* ── Cards ── */
+.card-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1.5rem 0}
+@media(max-width:650px){.card-grid{grid-template-columns:1fr}}
+.card-grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin:1.5rem 0}
+@media(max-width:750px){.card-grid-3{grid-template-columns:1fr}}
+.card{background:var(--paper-card);border:1px solid var(--rule);border-radius:var(--radius-lg);padding:1.25rem 1.5rem}
+.card h4{margin-top:0;font-size:0.95rem}
+.card p{font-size:0.88rem;color:var(--ink-secondary);margin-bottom:0}
+.card code{font-size:0.78em}
+
+/* ── Callout ── */
+.callout{border-radius:var(--radius);padding:1.25rem 1.5rem;margin:1.5rem 0;font-size:0.92rem;line-height:1.7}
+.callout-listen{background:var(--listen-bg);border:1px solid var(--listen-border);color:#134e4a}
+.callout-think{background:var(--think-bg);border:1px solid var(--think-border);color:#4c1d95}
+.callout-do{background:var(--do-bg);border:1px solid var(--do-border);color:#7f1d1d}
+.callout-remember{background:var(--remember-bg);border:1px solid var(--remember-border);color:#78350f}
+.callout-neutral{background:var(--paper-warm);border:1px solid var(--rule);color:var(--ink)}
+.callout strong{font-weight:600}
+
+/* ── Table ── */
+.table-wrap{overflow-x:auto;margin:1.5rem 0}
+table{width:100%;border-collapse:collapse;font-size:0.88rem}
+th{text-align:left;font-family:var(--font-mono);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:var(--ink-tertiary);padding:0.75rem 1rem;border-bottom:2px solid var(--rule-heavy)}
+td{padding:0.75rem 1rem;border-bottom:1px solid var(--rule);color:var(--ink-secondary);vertical-align:top}
+td:first-child{color:var(--ink);font-weight:500}
+
+/* ── Expandable ── */
+details{border:1px solid var(--rule);border-radius:var(--radius);margin:1rem 0;background:var(--paper-card)}
+summary{padding:1rem 1.25rem;cursor:pointer;font-weight:500;font-size:0.92rem;list-style:none;user-select:none;display:flex;align-items:center;gap:8px}
+summary::-webkit-details-marker{display:none}
+summary::before{content:'';width:0;height:0;border-left:5px solid var(--ink-tertiary);border-top:4px solid transparent;border-bottom:4px solid transparent;transition:transform .2s;flex-shrink:0}
+details[open] summary::before{transform:rotate(90deg)}
+.detail-body{padding:0 1.25rem 1.25rem;font-size:0.92rem;color:var(--ink-secondary);line-height:1.7}
+
+/* ── Flow diagram ── */
+.flow-phases{display:flex;gap:2px;margin:2rem 0;border-radius:var(--radius-lg);overflow:hidden}
+.flow-phase{flex:1;padding:1rem;text-align:center;font-family:var(--font-mono);font-size:12px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;position:relative}
+.flow-phase span{display:block;font-family:var(--font-display);font-size:1.3rem;font-weight:400;text-transform:none;letter-spacing:normal;margin-top:4px}
+.fp-listen{background:var(--listen-bg);color:var(--listen)}
+.fp-think{background:var(--think-bg);color:var(--think)}
+.fp-do{background:var(--do-bg);color:var(--do)}
+.fp-remember{background:var(--remember-bg);color:var(--remember)}
+
+/* ── Divider ── */
+hr{border:none;height:1px;background:var(--rule-heavy);margin:3rem 0}
+
+/* ── TOC ── */
+.toc-sticky{position:fixed;right:2rem;top:50%;transform:translateY(-50%);z-index:100;display:flex;flex-direction:column;gap:14px}
+.toc-sticky a{display:flex;align-items:center;gap:8px;text-decoration:none;font-family:var(--font-mono);font-size:10px;color:var(--ink-tertiary);transition:color .2s}
+.toc-sticky a:hover{color:var(--ink)}
+.toc-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;transition:all .2s}
+.toc-lbl{opacity:0;transform:translateX(4px);transition:all .2s;white-space:nowrap}
+.toc-sticky a:hover .toc-lbl{opacity:1;transform:translateX(0)}
+@media(max-width:1050px){.toc-sticky{display:none}}
+
+/* ── Footer ── */
+footer{border-top:1px solid var(--rule-heavy);padding:3rem 0;text-align:center;font-size:0.82rem;color:var(--ink-tertiary)}
+</style>
+</head>
+<body>
+
+<nav class="toc-sticky" id="toc">
+  <a href="#preamble"><span class="toc-dot" style="background:var(--accent)"></span><span class="toc-lbl">Preamble</span></a>
+  <a href="#listen"><span class="toc-dot" style="background:var(--listen)"></span><span class="toc-lbl">Listen</span></a>
+  <a href="#think"><span class="toc-dot" style="background:var(--think)"></span><span class="toc-lbl">Think</span></a>
+  <a href="#do"><span class="toc-dot" style="background:var(--do)"></span><span class="toc-lbl">Do</span></a>
+  <a href="#remember"><span class="toc-dot" style="background:var(--remember)"></span><span class="toc-lbl">Remember</span></a>
+  <a href="#composition"><span class="toc-dot" style="background:var(--ink-tertiary)"></span><span class="toc-lbl">Composition</span></a>
+  <a href="#examples"><span class="toc-dot" style="background:var(--ink-tertiary)"></span><span class="toc-lbl">Examples</span></a>
+  <a href="#scenarios"><span class="toc-dot" style="background:var(--ink-tertiary)"></span><span class="toc-lbl">Scenarios</span></a>
+</nav>
+
+<div class="page">
+
+<!-- ════════════════════════════ HERO ════════════════════════════ -->
+<header class="hero">
+  <span class="hero-version">LTDR Specification v0.1.0</span>
+  <h1>Listen, Think, <em>Do</em>, Remember</h1>
+  <p class="hero-sub">An open standard for building personal AI assistants. Language-agnostic. Vendor-neutral. Zero dependency on any existing framework. Own every line of code you ship.</p>
+  <div class="hero-meta">
+    <span>March 2026</span>
+    <span>License: CC-BY-4.0</span>
+    <span>Status: Draft</span>
+  </div>
+</header>
+
+<!-- ════════════════════════════ PREAMBLE ════════════════════════════ -->
+<section class="phase" id="preamble">
+  <span class="phase-tag tag-standard">Preamble</span>
+  <h2>Why an <em>open standard</em></h2>
+  <p class="phase-desc">OpenClaw proved the pattern. But 430,000 lines of TypeScript in a single Node.js process isn't for everyone. The pattern itself — four phases of agent execution forming a persistent loop — is the real innovation. This specification extracts that pattern into a vendor-neutral protocol so anyone can build their own assistant in any language, with total control over their code, their data, and their security posture.</p>
+
+  <div class="flow-phases">
+    <div class="flow-phase fp-listen">Phase 1<span>Listen</span></div>
+    <div class="flow-phase fp-think">Phase 2<span>Think</span></div>
+    <div class="flow-phase fp-do">Phase 3<span>Do</span></div>
+    <div class="flow-phase fp-remember">Phase 4<span>Remember</span></div>
+  </div>
+
+  <!-- ══ ILLUSTRATION 1: Master architecture loop ══ -->
+  <div style="background:var(--paper-card);border:1px solid var(--rule);border-radius:var(--radius-lg);padding:2rem 1.5rem;margin:2.5rem 0">
+    <svg viewBox="0 0 760 500" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;font-family:'Outfit',system-ui,sans-serif">
+      <defs>
+        <marker id="a1" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+      </defs>
+
+      <!-- Title -->
+      <text x="380" y="30" text-anchor="middle" font-size="14" font-weight="600" fill="#1a1a1f" letter-spacing="0.05em" font-variant="small-caps">LTDR architecture — the four-phase loop</text>
+
+      <!-- ── EXTERNAL WORLD (top) ── -->
+      <rect x="220" y="52" width="320" height="42" rx="21" fill="#f5f5f0" stroke="#d4d4d8" stroke-width="0.75"/>
+      <text x="380" y="77" text-anchor="middle" font-size="12" fill="#52525b">External world — users, platforms, sensors, APIs</text>
+
+      <!-- Arrow down to Listen -->
+      <line x1="380" y1="94" x2="380" y2="124" stroke="#0d9488" stroke-width="1.5" marker-end="url(#a1)"/>
+      <text x="394" y="113" font-size="10" fill="#0d9488" font-weight="500">inbound</text>
+
+      <!-- ── LISTEN ── -->
+      <rect x="60" y="126" width="280" height="100" rx="12" fill="#ccfbf1" stroke="#99f6e4" stroke-width="0.75"/>
+      <text x="200" y="150" text-anchor="middle" font-size="13" font-weight="600" fill="#0d9488">LISTEN</text>
+      <text x="200" y="168" text-anchor="middle" font-size="11" fill="#52525b">Channel adapters normalize input</text>
+      <!-- Adapter boxes -->
+      <rect x="80" y="180" width="68" height="28" rx="5" fill="white" stroke="#99f6e4" stroke-width="0.5"/>
+      <text x="114" y="198" text-anchor="middle" font-size="10" fill="#0d9488">Telegram</text>
+      <rect x="156" y="180" width="56" height="28" rx="5" fill="white" stroke="#99f6e4" stroke-width="0.5"/>
+      <text x="184" y="198" text-anchor="middle" font-size="10" fill="#0d9488">Slack</text>
+      <rect x="220" y="180" width="44" height="28" rx="5" fill="white" stroke="#99f6e4" stroke-width="0.5"/>
+      <text x="242" y="198" text-anchor="middle" font-size="10" fill="#0d9488">CLI</text>
+      <rect x="272" y="180" width="52" height="28" rx="5" fill="white" stroke="#99f6e4" stroke-width="0.5"/>
+      <text x="298" y="198" text-anchor="middle" font-size="10" fill="#0d9488">Voice</text>
+
+      <!-- Arrow Listen → Think -->
+      <line x1="340" y1="176" x2="418" y2="176" stroke="#52525b" stroke-width="1" marker-end="url(#a1)"/>
+      <text x="379" y="168" text-anchor="middle" font-size="9" fill="#a1a1aa">LTDR Message</text>
+
+      <!-- ── THINK ── -->
+      <rect x="420" y="126" width="300" height="100" rx="12" fill="#ede9fe" stroke="#c4b5fd" stroke-width="0.75"/>
+      <text x="570" y="150" text-anchor="middle" font-size="13" font-weight="600" fill="#7c3aed">THINK</text>
+      <text x="570" y="168" text-anchor="middle" font-size="11" fill="#52525b">Context assembly + ReAct loop</text>
+      <!-- Internal boxes -->
+      <rect x="436" y="180" width="80" height="28" rx="5" fill="white" stroke="#c4b5fd" stroke-width="0.5"/>
+      <text x="476" y="198" text-anchor="middle" font-size="10" fill="#7c3aed">Context</text>
+      <rect x="524" y="180" width="62" height="28" rx="5" fill="white" stroke="#c4b5fd" stroke-width="0.5"/>
+      <text x="555" y="198" text-anchor="middle" font-size="10" fill="#7c3aed">ReAct</text>
+      <rect x="594" y="180" width="110" height="28" rx="5" fill="white" stroke="#c4b5fd" stroke-width="0.5"/>
+      <text x="649" y="198" text-anchor="middle" font-size="10" fill="#7c3aed">Model provider</text>
+
+      <!-- Arrow Think → Do -->
+      <line x1="570" y1="226" x2="570" y2="270" stroke="#52525b" stroke-width="1" marker-end="url(#a1)"/>
+      <text x="584" y="252" font-size="9" fill="#a1a1aa">tool calls</text>
+
+      <!-- ── DO ── -->
+      <rect x="420" y="272" width="300" height="100" rx="12" fill="#fee2e2" stroke="#fca5a5" stroke-width="0.75"/>
+      <text x="570" y="296" text-anchor="middle" font-size="13" font-weight="600" fill="#dc2626">DO</text>
+      <text x="570" y="314" text-anchor="middle" font-size="11" fill="#52525b">Sandboxed tool execution</text>
+      <!-- Tool boxes -->
+      <rect x="436" y="326" width="56" height="28" rx="5" fill="white" stroke="#fca5a5" stroke-width="0.5"/>
+      <text x="464" y="344" text-anchor="middle" font-size="10" fill="#dc2626">Search</text>
+      <rect x="500" y="326" width="48" height="28" rx="5" fill="white" stroke="#fca5a5" stroke-width="0.5"/>
+      <text x="524" y="344" text-anchor="middle" font-size="10" fill="#dc2626">Shell</text>
+      <rect x="556" y="326" width="52" height="28" rx="5" fill="white" stroke="#fca5a5" stroke-width="0.5"/>
+      <text x="582" y="344" text-anchor="middle" font-size="10" fill="#dc2626">APIs</text>
+      <rect x="616" y="326" width="86" height="28" rx="5" fill="white" stroke="#fca5a5" stroke-width="0.5"/>
+      <text x="659" y="344" text-anchor="middle" font-size="10" fill="#dc2626">Custom</text>
+
+      <!-- Arrow Do → Think (loop back) -->
+      <path d="M720 322 L738 322 L738 176 L720 176" fill="none" stroke="#52525b" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#a1)"/>
+      <text x="748" y="252" font-size="9" fill="#a1a1aa" transform="rotate(90,748,252)">observe results</text>
+
+      <!-- Arrow Think → Listen (response) -->
+      <line x1="420" y1="148" x2="380" y2="148" stroke="#0d9488" stroke-width="1" stroke-dasharray="4 3"/>
+      <line x1="380" y1="148" x2="380" y2="94" stroke="#0d9488" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#a1)"/>
+      <text x="396" y="140" font-size="9" fill="#0d9488">response</text>
+
+      <!-- ── REMEMBER ── -->
+      <rect x="60" y="272" width="280" height="100" rx="12" fill="#fef3c7" stroke="#fde68a" stroke-width="0.75"/>
+      <text x="200" y="296" text-anchor="middle" font-size="13" font-weight="600" fill="#d97706">REMEMBER</text>
+      <text x="200" y="314" text-anchor="middle" font-size="11" fill="#52525b">Two-layer persistent memory</text>
+      <!-- Memory boxes -->
+      <rect x="80" y="326" width="86" height="28" rx="5" fill="white" stroke="#fde68a" stroke-width="0.5"/>
+      <text x="123" y="344" text-anchor="middle" font-size="10" fill="#d97706">Daily notes</text>
+      <rect x="174" y="326" width="86" height="28" rx="5" fill="white" stroke="#fde68a" stroke-width="0.5"/>
+      <text x="217" y="344" text-anchor="middle" font-size="10" fill="#d97706">MEMORY.md</text>
+      <rect x="268" y="326" width="56" height="28" rx="5" fill="white" stroke="#fde68a" stroke-width="0.5"/>
+      <text x="296" y="344" text-anchor="middle" font-size="10" fill="#d97706">Search</text>
+
+      <!-- Arrow Remember → Think (memory injection) -->
+      <path d="M340 310 L400 310 L400 192 L418 192" fill="none" stroke="#d97706" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#a1)"/>
+      <text x="370" y="304" font-size="9" fill="#d97706">context injection</text>
+
+      <!-- Arrow Think/Do → Remember (writes) -->
+      <path d="M420 340 L360 340 L360 340 L340 340" fill="none" stroke="#d97706" stroke-width="1" marker-end="url(#a1)"/>
+      <text x="380" y="356" text-anchor="middle" font-size="9" fill="#d97706">persist</text>
+
+      <!-- ── SESSION MANAGER (center) ── -->
+      <rect x="290" y="234" width="108" height="32" rx="16" fill="#f5f5f0" stroke="#d4d4d8" stroke-width="0.75"/>
+      <text x="344" y="254" text-anchor="middle" font-size="10" font-weight="600" fill="#52525b">Session manager</text>
+
+      <!-- ── Filesystem (bottom) ── -->
+      <rect x="100" y="410" width="560" height="72" rx="10" fill="#f5f5f0" stroke="#d4d4d8" stroke-width="0.75" stroke-dasharray="6 3"/>
+      <text x="380" y="432" text-anchor="middle" font-size="12" font-weight="600" fill="#52525b">Filesystem — source of truth</text>
+      <text x="160" y="462" text-anchor="middle" font-size="10" fill="#a1a1aa">SOUL.md</text>
+      <text x="260" y="462" text-anchor="middle" font-size="10" fill="#a1a1aa">MEMORY.md</text>
+      <text x="370" y="462" text-anchor="middle" font-size="10" fill="#a1a1aa">memory/*.md</text>
+      <text x="480" y="462" text-anchor="middle" font-size="10" fill="#a1a1aa">config.toml</text>
+      <text x="580" y="462" text-anchor="middle" font-size="10" fill="#a1a1aa">.audit/*.jsonl</text>
+
+      <!-- Arrow Remember → Filesystem -->
+      <line x1="200" y1="372" x2="200" y2="408" stroke="#d97706" stroke-width="1" marker-end="url(#a1)"/>
+    </svg>
+  </div>
+
+  <!-- ══ ILLUSTRATION 2: Data flow through a single turn ══ -->
+  <div style="background:var(--paper-card);border:1px solid var(--rule);border-radius:var(--radius-lg);padding:2rem 1.5rem;margin:1.5rem 0">
+    <svg viewBox="0 0 760 340" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;font-family:'Outfit',system-ui,sans-serif">
+      <defs>
+        <marker id="a2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+      </defs>
+
+      <text x="380" y="24" text-anchor="middle" font-size="14" font-weight="600" fill="#1a1a1f" letter-spacing="0.05em" font-variant="small-caps">Anatomy of a single agent turn</text>
+
+      <!-- Step 1: Inbound -->
+      <rect x="20" y="50" width="130" height="60" rx="10" fill="#ccfbf1" stroke="#99f6e4" stroke-width="0.75"/>
+      <text x="85" y="72" text-anchor="middle" font-size="11" font-weight="600" fill="#0d9488">1. Inbound</text>
+      <text x="85" y="90" text-anchor="middle" font-size="9" fill="#52525b">User sends message</text>
+      <text x="85" y="102" text-anchor="middle" font-size="9" fill="#52525b">via Telegram/CLI/...</text>
+
+      <line x1="150" y1="80" x2="176" y2="80" stroke="#52525b" stroke-width="1" marker-end="url(#a2)"/>
+
+      <!-- Step 2: Normalize -->
+      <rect x="178" y="50" width="120" height="60" rx="10" fill="#ccfbf1" stroke="#99f6e4" stroke-width="0.75"/>
+      <text x="238" y="72" text-anchor="middle" font-size="11" font-weight="600" fill="#0d9488">2. Normalize</text>
+      <text x="238" y="90" text-anchor="middle" font-size="9" fill="#52525b">Adapter creates</text>
+      <text x="238" y="102" text-anchor="middle" font-size="9" fill="#52525b">LTDR Message</text>
+
+      <line x1="298" y1="80" x2="324" y2="80" stroke="#52525b" stroke-width="1" marker-end="url(#a2)"/>
+
+      <!-- Step 3: Assemble context -->
+      <rect x="326" y="50" width="130" height="60" rx="10" fill="#ede9fe" stroke="#c4b5fd" stroke-width="0.75"/>
+      <text x="391" y="72" text-anchor="middle" font-size="11" font-weight="600" fill="#7c3aed">3. Assemble</text>
+      <text x="391" y="90" text-anchor="middle" font-size="9" fill="#52525b">Persona + memory +</text>
+      <text x="391" y="102" text-anchor="middle" font-size="9" fill="#52525b">history + tools + msg</text>
+
+      <line x1="456" y1="80" x2="482" y2="80" stroke="#52525b" stroke-width="1" marker-end="url(#a2)"/>
+
+      <!-- Step 4: Model call -->
+      <rect x="484" y="50" width="120" height="60" rx="10" fill="#ede9fe" stroke="#c4b5fd" stroke-width="0.75"/>
+      <text x="544" y="72" text-anchor="middle" font-size="11" font-weight="600" fill="#7c3aed">4. Model call</text>
+      <text x="544" y="90" text-anchor="middle" font-size="9" fill="#52525b">LLM reasons over</text>
+      <text x="544" y="102" text-anchor="middle" font-size="9" fill="#52525b">assembled context</text>
+
+      <line x1="604" y1="80" x2="630" y2="80" stroke="#52525b" stroke-width="1" marker-end="url(#a2)"/>
+
+      <!-- Step 5: Decision -->
+      <rect x="632" y="50" width="108" height="60" rx="30" fill="#f5f5f0" stroke="#d4d4d8" stroke-width="0.75"/>
+      <text x="686" y="72" text-anchor="middle" font-size="11" font-weight="600" fill="#52525b">5. Decide</text>
+      <text x="686" y="90" text-anchor="middle" font-size="9" fill="#52525b">Tool call or</text>
+      <text x="686" y="102" text-anchor="middle" font-size="9" fill="#52525b">final response?</text>
+
+      <!-- Branch A: Tool call path (down) -->
+      <line x1="686" y1="110" x2="686" y2="148" stroke="#dc2626" stroke-width="1" marker-end="url(#a2)"/>
+      <text x="700" y="134" font-size="9" fill="#dc2626" font-weight="500">tool call</text>
+
+      <!-- Step 6a: Execute tool -->
+      <rect x="610" y="150" width="150" height="60" rx="10" fill="#fee2e2" stroke="#fca5a5" stroke-width="0.75"/>
+      <text x="685" y="172" text-anchor="middle" font-size="11" font-weight="600" fill="#dc2626">6a. Execute</text>
+      <text x="685" y="190" text-anchor="middle" font-size="9" fill="#52525b">Run tool in sandbox</text>
+      <text x="685" y="202" text-anchor="middle" font-size="9" fill="#52525b">validate + log result</text>
+
+      <!-- Loop back arrow: Execute → Model call -->
+      <path d="M610 180 L544 180 L544 112" fill="none" stroke="#52525b" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#a2)"/>
+      <text x="568" y="174" font-size="9" fill="#a1a1aa">append result</text>
+      <text x="568" y="186" font-size="9" fill="#a1a1aa">loop back</text>
+
+      <!-- Branch B: Final response path (down-left) -->
+      <path d="M632 90 L570 90 L570 148" fill="none" stroke="#0d9488" stroke-width="1"/>
+      <text x="596" y="134" font-size="9" fill="#0d9488" font-weight="500">final text</text>
+
+      <!-- Step 6b: Respond -->
+      <rect x="420" y="150" width="140" height="60" rx="10" fill="#ccfbf1" stroke="#99f6e4" stroke-width="0.75"/>
+      <text x="490" y="172" text-anchor="middle" font-size="11" font-weight="600" fill="#0d9488">6b. Respond</text>
+      <text x="490" y="190" text-anchor="middle" font-size="9" fill="#52525b">Stream back through</text>
+      <text x="490" y="202" text-anchor="middle" font-size="9" fill="#52525b">originating channel</text>
+
+      <line x1="570" y1="150" x2="560" y2="150" stroke="#0d9488" stroke-width="1" marker-end="url(#a2)"/>
+
+      <!-- Step 7: Remember -->
+      <rect x="220" y="150" width="155" height="60" rx="10" fill="#fef3c7" stroke="#fde68a" stroke-width="0.75"/>
+      <text x="297" y="172" text-anchor="middle" font-size="11" font-weight="600" fill="#d97706">7. Remember</text>
+      <text x="297" y="190" text-anchor="middle" font-size="9" fill="#52525b">Write conversation to</text>
+      <text x="297" y="202" text-anchor="middle" font-size="9" fill="#52525b">daily notes + audit log</text>
+
+      <line x1="420" y1="180" x2="377" y2="180" stroke="#d97706" stroke-width="1" marker-end="url(#a2)"/>
+
+      <!-- Bottom: Compaction callout -->
+      <rect x="108" y="250" width="544" height="60" rx="10" fill="#fef3c7" stroke="#fde68a" stroke-width="0.75" stroke-dasharray="6 3"/>
+      <text x="380" y="274" text-anchor="middle" font-size="11" font-weight="600" fill="#d97706">Compaction flush — the critical invariant</text>
+      <text x="380" y="294" text-anchor="middle" font-size="10" fill="#52525b">When context window fills up: silently persist important context to daily notes BEFORE compacting history.</text>
+      <text x="380" y="306" text-anchor="middle" font-size="10" fill="#52525b">Controlled via config. Invisible to user. Prevents knowledge loss across long sessions.</text>
+
+      <!-- Arrow from Remember down to compaction -->
+      <line x1="297" y1="210" x2="297" y2="248" stroke="#d97706" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#a2)"/>
+    </svg>
+  </div>
+
+  <!-- ══ ILLUSTRATION 3: Memory topology ══ -->
+  <div style="background:var(--paper-card);border:1px solid var(--rule);border-radius:var(--radius-lg);padding:2rem 1.5rem;margin:1.5rem 0 2.5rem">
+    <svg viewBox="0 0 760 300" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;font-family:'Outfit',system-ui,sans-serif">
+      <defs>
+        <marker id="a3" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+      </defs>
+
+      <text x="380" y="24" text-anchor="middle" font-size="14" font-weight="600" fill="#1a1a1f" letter-spacing="0.05em" font-variant="small-caps">Memory topology — how knowledge persists</text>
+
+      <!-- Session (ephemeral, top) -->
+      <rect x="260" y="48" width="240" height="46" rx="10" fill="#ede9fe" stroke="#c4b5fd" stroke-width="0.75"/>
+      <text x="380" y="68" text-anchor="middle" font-size="12" font-weight="600" fill="#7c3aed">Active session context</text>
+      <text x="380" y="84" text-anchor="middle" font-size="10" fill="#52525b">Ephemeral — lives in context window only</text>
+
+      <!-- Arrow down: session → daily notes (write) -->
+      <line x1="320" y1="94" x2="220" y2="134" stroke="#d97706" stroke-width="1" marker-end="url(#a3)"/>
+      <text x="250" y="110" font-size="9" fill="#d97706" font-weight="500">writes live</text>
+
+      <!-- Arrow down: session → curated (promote) -->
+      <line x1="440" y1="94" x2="540" y2="134" stroke="#d97706" stroke-width="1" marker-end="url(#a3)"/>
+      <text x="510" y="110" font-size="9" fill="#d97706" font-weight="500">curates over time</text>
+
+      <!-- Daily notes (left) -->
+      <rect x="60" y="136" width="280" height="80" rx="10" fill="#fef3c7" stroke="#fde68a" stroke-width="0.75"/>
+      <text x="200" y="158" text-anchor="middle" font-size="12" font-weight="600" fill="#d97706">Layer 1: Daily notes</text>
+      <text x="200" y="176" text-anchor="middle" font-size="10" fill="#52525b">memory/YYYY-MM-DD.md — append-only</text>
+      <text x="200" y="192" text-anchor="middle" font-size="10" fill="#52525b">Session loads today + yesterday at startup</text>
+      <!-- File representations -->
+      <rect x="82" y="198" width="44" height="12" rx="2" fill="white" stroke="#fde68a" stroke-width="0.5"/>
+      <rect x="130" y="198" width="44" height="12" rx="2" fill="white" stroke="#fde68a" stroke-width="0.5"/>
+      <rect x="178" y="198" width="44" height="12" rx="2" fill="white" stroke="#fde68a" stroke-width="0.5"/>
+      <rect x="226" y="198" width="44" height="12" rx="2" fill="white" stroke="#fde68a" stroke-width="0.5"/>
+      <rect x="274" y="198" width="44" height="12" rx="2" fill="#fde68a" stroke="#d97706" stroke-width="0.5"/>
+      <text x="296" y="207" text-anchor="middle" font-size="7" fill="#d97706">today</text>
+
+      <!-- Curated (right) -->
+      <rect x="420" y="136" width="280" height="80" rx="10" fill="#fef3c7" stroke="#fde68a" stroke-width="0.75"/>
+      <text x="560" y="158" text-anchor="middle" font-size="12" font-weight="600" fill="#d97706">Layer 2: MEMORY.md</text>
+      <text x="560" y="176" text-anchor="middle" font-size="10" fill="#52525b">Curated knowledge — durable, high-signal</text>
+      <text x="560" y="192" text-anchor="middle" font-size="10" fill="#52525b">Private sessions only — never group chats</text>
+
+      <!-- Both feed into search -->
+      <line x1="200" y1="216" x2="200" y2="244" stroke="#52525b" stroke-width="1" marker-end="url(#a3)"/>
+      <line x1="560" y1="216" x2="560" y2="244" stroke="#52525b" stroke-width="1" marker-end="url(#a3)"/>
+
+      <!-- Search layer -->
+      <rect x="100" y="246" width="560" height="44" rx="10" fill="#f5f5f0" stroke="#d4d4d8" stroke-width="0.75"/>
+      <text x="380" y="265" text-anchor="middle" font-size="12" font-weight="600" fill="#52525b">Hybrid search index</text>
+      <text x="380" y="281" text-anchor="middle" font-size="10" fill="#a1a1aa">Vector similarity (sqlite-vec)  +  BM25 keywords (FTS5)  +  Temporal decay  +  MMR dedup</text>
+
+      <!-- Arrow: search → session (context injection, curved) -->
+      <path d="M380 246 L380 232 L46 232 L46 71 L258 71" fill="none" stroke="#7c3aed" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#a3)"/>
+      <text x="46" y="156" font-size="9" fill="#7c3aed" font-weight="500" transform="rotate(-90,46,156)">search results inject into context</text>
+
+      <!-- Three curation triggers (annotations) -->
+      <circle cx="370" y="120" r="3" fill="#d97706"/>
+      <text x="380" y="123" font-size="8" fill="#d97706">A: Compaction flush (auto)</text>
+      <circle cx="370" y="130" r="3" fill="#7c3aed"/>
+      <text x="380" y="133" font-size="8" fill="#7c3aed">B: Periodic review (cron)</text>
+    </svg>
+  </div>
+
+  <h3>Design principles</h3>
+
+  <div class="spec">
+    <h4>Normative requirements</h4>
+    <ul>
+      <li><strong>Language-agnostic.</strong> Every interface is defined as a behavioral contract (input shape → output shape), not a library API. Implement in Go, Rust, Python, TypeScript, Zig, C — whatever your threat model and deployment target demand.</li>
+      <li><strong>Vendor-neutral.</strong> No primitive depends on a specific LLM provider, database, messaging platform, or cloud service. Every dependency is behind a pluggable interface.</li>
+      <li><strong>File-first persistence.</strong> All durable state (memory, config, persona) MUST be representable as plain files on a filesystem. Databases are an optimization layer, not a requirement.</li>
+      <li><strong>Auditable by default.</strong> Every agent action MUST produce a trace record. A human MUST be able to reconstruct what the agent did, why, and with what data — after the fact, without special tools.</li>
+      <li><strong>Progressive trust.</strong> The system MUST start with zero permissions and require explicit grants for each capability. No tool, channel, or memory scope is enabled by default.</li>
+    </ul>
+  </div>
+
+  <h3>The LTDR message</h3>
+  <p>All four phases operate on a single shared data structure: the <strong>LTDR Message</strong>. This is the normalized representation that flows through the entire system. Every channel adapter produces it, every agent consumes it, every tool result extends it.</p>
+
+  <div class="code-group">
+    <div class="code-tabs">
+      <button class="code-tab active" onclick="showTab(this,'msg')">TypeScript</button>
+      <button class="code-tab" onclick="showTab(this,'msg')">Go</button>
+      <button class="code-tab" onclick="showTab(this,'msg')">Rust</button>
+      <button class="code-tab" onclick="showTab(this,'msg')">Python</button>
+    </div>
+    <div class="code-panel active" data-group="msg" data-lang="TypeScript">
+<span class="cm">// The universal message contract — all four phases operate on this shape</span>
+<span class="kw">interface</span> <span class="tp">LTDRMessage</span> {
+  <span class="fn">id</span>: <span class="tp">string</span>                     <span class="cm">// UUID v7 (time-sortable)</span>
+  <span class="fn">timestamp</span>: <span class="tp">string</span>              <span class="cm">// ISO 8601</span>
+  <span class="fn">source</span>: {
+    <span class="fn">channel</span>: <span class="tp">string</span>              <span class="cm">// "telegram" | "discord" | "cli" | ...</span>
+    <span class="fn">user_id</span>: <span class="tp">string</span>              <span class="cm">// Channel-specific sender ID</span>
+    <span class="fn">display_name</span>: <span class="tp">string</span>         <span class="cm">// Human-readable name</span>
+    <span class="fn">is_group</span>: <span class="tp">boolean</span>            <span class="cm">// DM vs group context</span>
+    <span class="fn">group_id</span>?: <span class="tp">string</span>            <span class="cm">// Present if is_group=true</span>
+  }
+  <span class="fn">content</span>: {
+    <span class="fn">text</span>: <span class="tp">string</span>                 <span class="cm">// Primary message body</span>
+    <span class="fn">attachments</span>: <span class="tp">Attachment</span>[]    <span class="cm">// Files, images, audio</span>
+  }
+  <span class="fn">metadata</span>: <span class="tp">Record</span>&lt;<span class="tp">string</span>, <span class="tp">unknown</span>&gt;  <span class="cm">// Channel-specific raw payload</span>
+  <span class="fn">trace_id</span>: <span class="tp">string</span>              <span class="cm">// Distributed trace ID for audit</span>
+}
+
+<span class="kw">interface</span> <span class="tp">Attachment</span> {
+  <span class="fn">type</span>: <span class="str">"image"</span> | <span class="str">"audio"</span> | <span class="str">"video"</span> | <span class="str">"document"</span>
+  <span class="fn">mime_type</span>: <span class="tp">string</span>
+  <span class="fn">url</span>?: <span class="tp">string</span>                  <span class="cm">// Remote URL or local file:// path</span>
+  <span class="fn">data</span>?: <span class="tp">Uint8Array</span>             <span class="cm">// Inline binary for small files</span>
+  <span class="fn">size_bytes</span>: <span class="tp">number</span>
+}
+    </div>
+    <div class="code-panel" data-group="msg" data-lang="Go">
+<span class="cm">// The universal message contract</span>
+<span class="kw">package</span> ltdr
+
+<span class="kw">import</span> <span class="str">"time"</span>
+
+<span class="kw">type</span> <span class="tp">Message</span> <span class="kw">struct</span> {
+  ID        <span class="tp">string</span>            <span class="cm">// UUID v7 (time-sortable)</span>
+  Timestamp <span class="tp">time.Time</span>         <span class="cm">// When received</span>
+  Source    <span class="tp">Source</span>            <span class="cm">// Who sent it, from where</span>
+  Content   <span class="tp">Content</span>           <span class="cm">// Text + attachments</span>
+  Metadata  <span class="tp">map[string]any</span>    <span class="cm">// Channel-specific raw payload</span>
+  TraceID   <span class="tp">string</span>            <span class="cm">// Distributed trace ID for audit</span>
+}
+
+<span class="kw">type</span> <span class="tp">Source</span> <span class="kw">struct</span> {
+  Channel     <span class="tp">string</span> <span class="cm">// "telegram", "discord", "cli"</span>
+  UserID      <span class="tp">string</span> <span class="cm">// Channel-specific sender ID</span>
+  DisplayName <span class="tp">string</span> <span class="cm">// Human-readable name</span>
+  IsGroup     <span class="tp">bool</span>   <span class="cm">// DM vs group context</span>
+  GroupID     <span class="tp">string</span> <span class="cm">// Present if IsGroup=true</span>
+}
+
+<span class="kw">type</span> <span class="tp">Content</span> <span class="kw">struct</span> {
+  Text        <span class="tp">string</span>
+  Attachments []<span class="tp">Attachment</span>
+}
+
+<span class="kw">type</span> <span class="tp">Attachment</span> <span class="kw">struct</span> {
+  Type      <span class="tp">string</span> <span class="cm">// "image", "audio", "video", "document"</span>
+  MimeType  <span class="tp">string</span>
+  URL       <span class="tp">string</span> <span class="cm">// Remote URL or local file:// path</span>
+  Data      []<span class="tp">byte</span> <span class="cm">// Inline binary for small files</span>
+  SizeBytes <span class="tp">int64</span>
+}
+    </div>
+    <div class="code-panel" data-group="msg" data-lang="Rust">
+<span class="cm">// The universal message contract</span>
+<span class="kw">use</span> chrono::{DateTime, Utc};
+<span class="kw">use</span> serde::{Deserialize, Serialize};
+<span class="kw">use</span> std::collections::HashMap;
+
+<span class="kw">#[derive(Serialize, Deserialize, Clone)]</span>
+<span class="kw">pub struct</span> <span class="tp">Message</span> {
+  <span class="kw">pub</span> id: <span class="tp">String</span>,                     <span class="cm">// UUID v7</span>
+  <span class="kw">pub</span> timestamp: <span class="tp">DateTime&lt;Utc&gt;</span>,
+  <span class="kw">pub</span> source: <span class="tp">Source</span>,
+  <span class="kw">pub</span> content: <span class="tp">Content</span>,
+  <span class="kw">pub</span> metadata: <span class="tp">HashMap&lt;String, serde_json::Value&gt;</span>,
+  <span class="kw">pub</span> trace_id: <span class="tp">String</span>,
+}
+
+<span class="kw">#[derive(Serialize, Deserialize, Clone)]</span>
+<span class="kw">pub struct</span> <span class="tp">Source</span> {
+  <span class="kw">pub</span> channel: <span class="tp">String</span>,
+  <span class="kw">pub</span> user_id: <span class="tp">String</span>,
+  <span class="kw">pub</span> display_name: <span class="tp">String</span>,
+  <span class="kw">pub</span> is_group: <span class="tp">bool</span>,
+  <span class="kw">pub</span> group_id: <span class="tp">Option&lt;String&gt;</span>,
+}
+
+<span class="kw">#[derive(Serialize, Deserialize, Clone)]</span>
+<span class="kw">pub struct</span> <span class="tp">Content</span> {
+  <span class="kw">pub</span> text: <span class="tp">String</span>,
+  <span class="kw">pub</span> attachments: <span class="tp">Vec&lt;Attachment&gt;</span>,
+}
+
+<span class="kw">#[derive(Serialize, Deserialize, Clone)]</span>
+<span class="kw">pub struct</span> <span class="tp">Attachment</span> {
+  <span class="kw">pub</span> kind: <span class="tp">AttachmentType</span>,      <span class="cm">// Image, Audio, Video, Document</span>
+  <span class="kw">pub</span> mime_type: <span class="tp">String</span>,
+  <span class="kw">pub</span> url: <span class="tp">Option&lt;String&gt;</span>,
+  <span class="kw">pub</span> data: <span class="tp">Option&lt;Vec&lt;u8&gt;&gt;</span>,
+  <span class="kw">pub</span> size_bytes: <span class="tp">u64</span>,
+}
+    </div>
+    <div class="code-panel" data-group="msg" data-lang="Python">
+<span class="cm"># The universal message contract</span>
+<span class="kw">from</span> dataclasses <span class="kw">import</span> dataclass, field
+<span class="kw">from</span> datetime <span class="kw">import</span> datetime
+<span class="kw">from</span> enum <span class="kw">import</span> Enum
+<span class="kw">from</span> typing <span class="kw">import</span> Any
+
+<span class="kw">class</span> <span class="tp">AttachmentType</span>(Enum):
+  IMAGE = <span class="str">"image"</span>
+  AUDIO = <span class="str">"audio"</span>
+  VIDEO = <span class="str">"video"</span>
+  DOCUMENT = <span class="str">"document"</span>
+
+<span class="kw">@dataclass</span>
+<span class="kw">class</span> <span class="tp">Attachment</span>:
+  kind: <span class="tp">AttachmentType</span>
+  mime_type: <span class="tp">str</span>
+  url: <span class="tp">str</span> | <span class="tp">None</span> = <span class="kw">None</span>
+  data: <span class="tp">bytes</span> | <span class="tp">None</span> = <span class="kw">None</span>
+  size_bytes: <span class="tp">int</span> = <span class="num">0</span>
+
+<span class="kw">@dataclass</span>
+<span class="kw">class</span> <span class="tp">Source</span>:
+  channel: <span class="tp">str</span>             <span class="cm"># "telegram", "discord", "cli"</span>
+  user_id: <span class="tp">str</span>
+  display_name: <span class="tp">str</span>
+  is_group: <span class="tp">bool</span> = <span class="kw">False</span>
+  group_id: <span class="tp">str</span> | <span class="tp">None</span> = <span class="kw">None</span>
+
+<span class="kw">@dataclass</span>
+<span class="kw">class</span> <span class="tp">Message</span>:
+  id: <span class="tp">str</span>                   <span class="cm"># UUID v7</span>
+  timestamp: <span class="tp">datetime</span>
+  source: <span class="tp">Source</span>
+  text: <span class="tp">str</span>
+  attachments: list[<span class="tp">Attachment</span>] = field(default_factory=list)
+  metadata: dict[<span class="tp">str</span>, <span class="tp">Any</span>] = field(default_factory=dict)
+  trace_id: <span class="tp">str</span> = <span class="str">""</span>
+    </div>
+  </div>
+
+</section>
+
+<!-- ════════════════════════════ PHASE 1: LISTEN ════════════════════════════ -->
+<section class="phase" id="listen">
+  <span class="phase-tag tag-listen">Phase 1</span>
+  <h2><em>Listen</em> — channel adapters</h2>
+  <p class="phase-desc">The Listen phase normalizes input from the outside world into LTDR Messages. Every messaging platform, CLI, voice interface, or webhook becomes a channel adapter that speaks one common protocol.</p>
+
+  <div class="spec spec-listen">
+    <h4>Specification</h4>
+    <p>A <strong>ChannelAdapter</strong> is any component that satisfies this behavioral contract:</p>
+    <ul>
+      <li><code>start()</code> — Begin listening for inbound messages. Establish platform-specific auth (OAuth, bot token, QR code). Return only after the connection is live.</li>
+      <li><code>stop()</code> — Gracefully disconnect. Flush any pending outbound messages. Release platform resources.</li>
+      <li><code>on_message(callback)</code> — Register a handler that receives normalized <code>LTDRMessage</code> objects. The adapter is responsible for translating platform-specific payloads into this shape.</li>
+      <li><code>send(message, target)</code> — Deliver an outbound message to a specific user/group. The adapter translates from LTDR format back to platform-specific formatting (Markdown → Block Kit for Slack, etc.).</li>
+      <li><code>health()</code> — Return connection status. Used by the session manager for circuit-breaking.</li>
+    </ul>
+    <p><strong>Security requirement:</strong> Adapters are untrusted input boundaries. All inbound content MUST be treated as potentially malicious. Sanitize text, validate attachment MIME types against actual content (not just headers), and enforce size limits before passing messages upstream.</p>
+  </div>
+
+  <h3>Reference implementation</h3>
+
+  <div class="code-group">
+    <div class="code-tabs">
+      <button class="code-tab active" onclick="showTab(this,'listen')">Go</button>
+      <button class="code-tab" onclick="showTab(this,'listen')">Rust</button>
+      <button class="code-tab" onclick="showTab(this,'listen')">Python</button>
+      <button class="code-tab" onclick="showTab(this,'listen')">TypeScript</button>
+    </div>
+    <div class="code-panel active" data-group="listen" data-lang="Go">
+<span class="cm">// ChannelAdapter — the interface every channel must implement.</span>
+<span class="cm">// Adding Telegram? Implement this. Adding voice? Implement this.</span>
+<span class="cm">// The session manager only speaks this contract.</span>
+
+<span class="kw">package</span> ltdr
+
+<span class="kw">import</span> <span class="str">"context"</span>
+
+<span class="kw">type</span> <span class="tp">ChannelAdapter</span> <span class="kw">interface</span> {
+  <span class="fn">Start</span>(ctx context.Context) <span class="tp">error</span>
+  <span class="fn">Stop</span>(ctx context.Context) <span class="tp">error</span>
+  <span class="fn">Send</span>(ctx context.Context, msg Message, target <span class="tp">string</span>) <span class="tp">error</span>
+  <span class="fn">OnMessage</span>(handler <span class="kw">func</span>(Message)) <span class="cm">// Register inbound handler</span>
+  <span class="fn">Health</span>() <span class="tp">HealthStatus</span>
+}
+
+<span class="kw">type</span> <span class="tp">HealthStatus</span> <span class="kw">struct</span> {
+  Connected <span class="tp">bool</span>
+  Latency   <span class="tp">time.Duration</span>
+  Error     <span class="tp">error</span>
+}
+
+<span class="cm">// ── Example: minimal Telegram adapter ──</span>
+
+<span class="kw">type</span> <span class="tp">TelegramAdapter</span> <span class="kw">struct</span> {
+  token   <span class="tp">string</span>
+  bot     *tgbotapi.BotAPI
+  handler <span class="kw">func</span>(Message)
+}
+
+<span class="kw">func</span> (t *<span class="tp">TelegramAdapter</span>) <span class="fn">Start</span>(ctx context.Context) <span class="tp">error</span> {
+  bot, err := tgbotapi.NewBotAPI(t.token)
+  <span class="kw">if</span> err != <span class="kw">nil</span> { <span class="kw">return</span> err }
+  t.bot = bot
+
+  updates := bot.GetUpdatesChan(tgbotapi.UpdateConfig{Timeout: <span class="num">30</span>})
+  <span class="kw">go func</span>() {
+    <span class="kw">for</span> {
+      <span class="kw">select</span> {
+      <span class="kw">case</span> &lt;-ctx.Done():
+        <span class="kw">return</span>
+      <span class="kw">case</span> update := &lt;-updates:
+        <span class="kw">if</span> update.Message == <span class="kw">nil</span> { <span class="kw">continue</span> }
+        <span class="cm">// Normalize: platform-specific → LTDR Message</span>
+        msg := <span class="fn">normalize</span>(update.Message)
+        t.handler(msg)
+      }
+    }
+  }()
+  <span class="kw">return nil</span>
+}
+
+<span class="kw">func</span> <span class="fn">normalize</span>(tg *tgbotapi.Message) <span class="tp">Message</span> {
+  <span class="kw">return</span> Message{
+    ID:        <span class="fn">newUUIDv7</span>(),
+    Timestamp: time.Unix(<span class="kw">int64</span>(tg.Date), <span class="num">0</span>),
+    Source: Source{
+      Channel:     <span class="str">"telegram"</span>,
+      UserID:      fmt.Sprintf(<span class="str">"%d"</span>, tg.From.ID),
+      DisplayName: tg.From.FirstName,
+      IsGroup:     tg.Chat.IsGroup() || tg.Chat.IsSuperGroup(),
+      GroupID:     fmt.Sprintf(<span class="str">"%d"</span>, tg.Chat.ID),
+    },
+    Content: Content{Text: tg.Text},
+    TraceID: <span class="fn">newTraceID</span>(),
+  }
+}
+    </div>
+    <div class="code-panel" data-group="listen" data-lang="Rust">
+<span class="cm">// Trait-driven adapter — implement for each channel.</span>
+<span class="cm">// Trait objects allow runtime polymorphism: Vec&lt;Box&lt;dyn ChannelAdapter&gt;&gt;</span>
+
+<span class="kw">use</span> async_trait::async_trait;
+
+<span class="kw">#[async_trait]</span>
+<span class="kw">pub trait</span> <span class="tp">ChannelAdapter</span>: Send + Sync {
+  <span class="kw">async fn</span> <span class="fn">start</span>(&amp;<span class="kw">mut</span> self) -> Result&lt;(), AdapterError&gt;;
+  <span class="kw">async fn</span> <span class="fn">stop</span>(&amp;<span class="kw">mut</span> self) -> Result&lt;(), AdapterError&gt;;
+  <span class="kw">async fn</span> <span class="fn">send</span>(&amp;self, msg: &amp;Message, target: &amp;<span class="tp">str</span>) -> Result&lt;(), AdapterError&gt;;
+  <span class="kw">fn</span> <span class="fn">health</span>(&amp;self) -> <span class="tp">HealthStatus</span>;
+}
+
+<span class="cm">// Inbound messages flow through an mpsc channel</span>
+<span class="kw">pub struct</span> <span class="tp">TelegramAdapter</span> {
+  token: <span class="tp">String</span>,
+  tx: tokio::sync::mpsc::<span class="tp">Sender&lt;Message&gt;</span>,
+}
+
+<span class="kw">#[async_trait]</span>
+<span class="kw">impl</span> <span class="tp">ChannelAdapter</span> <span class="kw">for</span> <span class="tp">TelegramAdapter</span> {
+  <span class="kw">async fn</span> <span class="fn">start</span>(&amp;<span class="kw">mut</span> self) -> Result&lt;(), AdapterError&gt; {
+    <span class="kw">let</span> api = frankenstein::Api::new(&amp;self.token);
+    <span class="kw">let</span> tx = self.tx.clone();
+
+    tokio::spawn(<span class="kw">async move</span> {
+      <span class="kw">let mut</span> offset: <span class="tp">Option&lt;i64&gt;</span> = <span class="kw">None</span>;
+      <span class="kw">loop</span> {
+        <span class="kw">let</span> params = GetUpdatesParams { offset, timeout: Some(<span class="num">30</span>), ..Default::default() };
+        <span class="kw">if let</span> Ok(response) = api.get_updates(&amp;params) {
+          <span class="kw">for</span> update <span class="kw">in</span> response.result {
+            offset = Some(update.update_id + <span class="num">1</span>);
+            <span class="kw">if let</span> Some(msg) = update.message {
+              <span class="kw">let</span> normalized = <span class="fn">normalize_telegram</span>(&amp;msg);
+              <span class="kw">let</span> _ = tx.send(normalized).<span class="kw">await</span>;
+            }
+          }
+        }
+      }
+    });
+    Ok(())
+  }
+  <span class="cm">// ... stop, send, health implementations</span>
+}
+    </div>
+    <div class="code-panel" data-group="listen" data-lang="Python">
+<span class="cm"># Protocol (structural typing) — any class with these methods works.</span>
+<span class="cm"># No base class inheritance required.</span>
+
+<span class="kw">from</span> typing <span class="kw">import</span> Protocol, Callable
+<span class="kw">import</span> asyncio
+
+<span class="kw">class</span> <span class="tp">ChannelAdapter</span>(Protocol):
+  <span class="kw">async def</span> <span class="fn">start</span>(self) -> <span class="tp">None</span>: ...
+  <span class="kw">async def</span> <span class="fn">stop</span>(self) -> <span class="tp">None</span>: ...
+  <span class="kw">async def</span> <span class="fn">send</span>(self, msg: <span class="tp">Message</span>, target: <span class="tp">str</span>) -> <span class="tp">None</span>: ...
+  <span class="kw">def</span> <span class="fn">on_message</span>(self, handler: Callable[[<span class="tp">Message</span>], <span class="tp">None</span>]) -> <span class="tp">None</span>: ...
+  <span class="kw">def</span> <span class="fn">health</span>(self) -> <span class="tp">HealthStatus</span>: ...
+
+<span class="cm"># ── Example: minimal Telegram adapter ──</span>
+
+<span class="kw">from</span> telegram <span class="kw">import</span> Update, Bot
+<span class="kw">from</span> telegram.ext <span class="kw">import</span> ApplicationBuilder, MessageHandler, filters
+
+<span class="kw">class</span> <span class="tp">TelegramAdapter</span>:
+  <span class="kw">def</span> <span class="fn">__init__</span>(self, token: <span class="tp">str</span>):
+    self._token = token
+    self._handler: Callable | <span class="tp">None</span> = <span class="kw">None</span>
+    self._app = <span class="kw">None</span>
+
+  <span class="kw">def</span> <span class="fn">on_message</span>(self, handler):
+    self._handler = handler
+
+  <span class="kw">async def</span> <span class="fn">start</span>(self):
+    self._app = ApplicationBuilder().token(self._token).build()
+    self._app.add_handler(MessageHandler(
+      filters.TEXT, self._on_update
+    ))
+    <span class="kw">await</span> self._app.run_polling()
+
+  <span class="kw">async def</span> <span class="fn">_on_update</span>(self, update: <span class="tp">Update</span>, ctx):
+    <span class="cm"># Normalize: platform-specific → LTDR Message</span>
+    msg = Message(
+      id=<span class="fn">uuid7</span>(),
+      timestamp=update.message.date,
+      source=Source(
+        channel=<span class="str">"telegram"</span>,
+        user_id=<span class="tp">str</span>(update.message.from_user.id),
+        display_name=update.message.from_user.first_name,
+        is_group=update.message.chat.type != <span class="str">"private"</span>,
+      ),
+      text=update.message.text <span class="kw">or</span> <span class="str">""</span>,
+      trace_id=<span class="fn">new_trace_id</span>(),
+    )
+    <span class="kw">if</span> self._handler:
+      self._handler(msg)
+    </div>
+    <div class="code-panel" data-group="listen" data-lang="TypeScript">
+<span class="cm">// Interface-driven — any object satisfying this shape is a valid adapter.</span>
+
+<span class="kw">interface</span> <span class="tp">ChannelAdapter</span> {
+  <span class="fn">start</span>(): <span class="tp">Promise</span>&lt;<span class="tp">void</span>&gt;
+  <span class="fn">stop</span>(): <span class="tp">Promise</span>&lt;<span class="tp">void</span>&gt;
+  <span class="fn">send</span>(msg: <span class="tp">LTDRMessage</span>, target: <span class="tp">string</span>): <span class="tp">Promise</span>&lt;<span class="tp">void</span>&gt;
+  <span class="fn">onMessage</span>(handler: (msg: <span class="tp">LTDRMessage</span>) =&gt; <span class="tp">void</span>): <span class="tp">void</span>
+  <span class="fn">health</span>(): <span class="tp">HealthStatus</span>
+}
+
+<span class="cm">// ── Example: minimal Discord adapter ──</span>
+
+<span class="kw">import</span> { Client, GatewayIntentBits } <span class="kw">from</span> <span class="str">"discord.js"</span>
+
+<span class="kw">class</span> <span class="tp">DiscordAdapter</span> <span class="kw">implements</span> <span class="tp">ChannelAdapter</span> {
+  <span class="kw">private</span> client: Client
+  <span class="kw">private</span> handler?: (msg: <span class="tp">LTDRMessage</span>) =&gt; <span class="tp">void</span>
+
+  <span class="kw">constructor</span>(<span class="kw">private</span> token: <span class="tp">string</span>) {
+    <span class="kw">this</span>.client = <span class="kw">new</span> Client({
+      intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages]
+    })
+  }
+
+  <span class="kw">async</span> <span class="fn">start</span>() {
+    <span class="kw">this</span>.client.on(<span class="str">"messageCreate"</span>, (disc) =&gt; {
+      <span class="kw">const</span> msg: <span class="tp">LTDRMessage</span> = {
+        id: <span class="fn">uuidv7</span>(),
+        timestamp: disc.createdAt.toISOString(),
+        source: {
+          channel: <span class="str">"discord"</span>,
+          user_id: disc.author.id,
+          display_name: disc.author.username,
+          is_group: !disc.channel.isDMBased(),
+          group_id: disc.guildId ?? <span class="kw">undefined</span>,
+        },
+        content: { text: disc.content, attachments: [] },
+        metadata: { raw: disc },
+        trace_id: <span class="fn">newTraceID</span>(),
+      }
+      <span class="kw">this</span>.handler?.(msg)
+    })
+    <span class="kw">await this</span>.client.login(<span class="kw">this</span>.token)
+  }
+  <span class="cm">// ... stop, send, health</span>
+}
+    </div>
+  </div>
+
+  <div class="callout callout-listen">
+    <strong>The key insight:</strong> Adding a new channel (voice, email, SMS, IoT sensor) means writing ONE adapter that normalizes to the LTDR Message shape. No changes to the Think, Do, or Remember phases. This is the plugin seam that makes the standard extensible.
+  </div>
+</section>
+
+<!-- ════════════════════════════ PHASE 2: THINK ════════════════════════════ -->
+<section class="phase" id="think">
+  <span class="phase-tag tag-think">Phase 2</span>
+  <h2><em>Think</em> — reasoning engine</h2>
+  <p class="phase-desc">The Think phase assembles context, invokes an LLM, and decides what to do next. It implements a reasoning loop (ReAct pattern) that alternates between thinking, acting, and observing until a final response is ready.</p>
+
+  <div class="spec spec-think">
+    <h4>Specification</h4>
+    <p>The Think phase consists of two subcomponents:</p>
+    <ul>
+      <li><strong>ContextAssembler</strong> — Composes the full prompt from system instructions, persona, memory, chat history, tool definitions, and the current message. Token-budget aware: MUST truncate or summarize when approaching the model's context limit.</li>
+      <li><strong>ReasoningLoop</strong> — Sends the assembled context to a <code>ModelProvider</code>, receives a response, and decides: (a) if the response contains a tool call → dispatch to the Do phase, append result, loop back; (b) if the response is a final text → exit loop, return to Listen phase for delivery.</li>
+    </ul>
+    <p><strong>Security requirement:</strong> The model provider is a network boundary. All requests MUST be sent over TLS. API keys MUST NOT appear in logs, traces, or memory files. Responses from the model MUST be treated as untrusted — validate tool call schemas before execution.</p>
+  </div>
+
+  <h3>Context assembler</h3>
+
+  <div class="code-group">
+    <div class="code-tabs">
+      <button class="code-tab active" onclick="showTab(this,'ctx')">Go</button>
+      <button class="code-tab" onclick="showTab(this,'ctx')">Rust</button>
+      <button class="code-tab" onclick="showTab(this,'ctx')">Python</button>
+      <button class="code-tab" onclick="showTab(this,'ctx')">TypeScript</button>
+    </div>
+    <div class="code-panel active" data-group="ctx" data-lang="Go">
+<span class="cm">// ContextAssembler — builds the full prompt for the model.</span>
+<span class="cm">// Each source is a "slot" that gets budget-allocated tokens.</span>
+
+<span class="kw">type</span> <span class="tp">ContextAssembler</span> <span class="kw">struct</span> {
+  maxTokens  <span class="tp">int</span>       <span class="cm">// Model's context window</span>
+  persona    <span class="tp">string</span>    <span class="cm">// Loaded from SOUL.md</span>
+  tools      []<span class="tp">ToolDef</span> <span class="cm">// Registered tool JSON schemas</span>
+  memory     <span class="tp">MemoryEngine</span>
+}
+
+<span class="kw">type</span> <span class="tp">ContextWindow</span> <span class="kw">struct</span> {
+  SystemPrompt <span class="tp">string</span>        <span class="cm">// Persona + rules + tool defs</span>
+  Messages     []<span class="tp">ChatMessage</span> <span class="cm">// History + memory injections</span>
+  TokensUsed   <span class="tp">int</span>
+  TokenBudget  <span class="tp">int</span>
+}
+
+<span class="kw">func</span> (ca *<span class="tp">ContextAssembler</span>) <span class="fn">Assemble</span>(
+  session *Session,
+  inbound Message,
+) (*<span class="tp">ContextWindow</span>, <span class="tp">error</span>) {
+  ctx := &amp;<span class="tp">ContextWindow</span>{TokenBudget: ca.maxTokens}
+
+  <span class="cm">// 1. System prompt: persona + behavioral rules</span>
+  ctx.SystemPrompt = ca.persona
+
+  <span class="cm">// 2. Tool definitions (JSON Schema for each registered tool)</span>
+  <span class="kw">for</span> _, tool := <span class="kw">range</span> ca.tools {
+    ctx.SystemPrompt += <span class="str">"\n\n"</span> + tool.Schema()
+  }
+
+  <span class="cm">// 3. Memory injection: today's daily notes + curated MEMORY.md</span>
+  memories, _ := ca.memory.<span class="fn">LoadSessionContext</span>(session.UserID)
+  ctx.Messages = <span class="kw">append</span>(ctx.Messages, ChatMessage{
+    Role: <span class="str">"system"</span>,
+    Content: <span class="str">"## Relevant memory\n"</span> + memories,
+  })
+
+  <span class="cm">// 4. Chat history (sliding window, newest first)</span>
+  <span class="kw">for</span> _, msg := <span class="kw">range</span> session.<span class="fn">RecentHistory</span>(ca.maxTokens / <span class="num">2</span>) {
+    ctx.Messages = <span class="kw">append</span>(ctx.Messages, msg)
+  }
+
+  <span class="cm">// 5. Current inbound message</span>
+  ctx.Messages = <span class="kw">append</span>(ctx.Messages, ChatMessage{
+    Role: <span class="str">"user"</span>, Content: inbound.Content.Text,
+  })
+
+  ctx.TokensUsed = <span class="fn">countTokens</span>(ctx)
+  <span class="kw">return</span> ctx, <span class="kw">nil</span>
+}
+    </div>
+    <div class="code-panel" data-group="ctx" data-lang="Rust">
+<span class="cm">// Context assembly as a builder pattern.</span>
+<span class="cm">// Each `.with_*()` call adds a slot to the context budget.</span>
+
+<span class="kw">pub struct</span> <span class="tp">ContextAssembler</span> {
+  max_tokens: <span class="tp">usize</span>,
+  persona: <span class="tp">String</span>,
+  tools: <span class="tp">Vec&lt;ToolDefinition&gt;</span>,
+  memory: <span class="tp">Box&lt;dyn MemoryEngine&gt;</span>,
+}
+
+<span class="kw">impl</span> <span class="tp">ContextAssembler</span> {
+  <span class="kw">pub async fn</span> <span class="fn">assemble</span>(
+    &amp;self,
+    session: &amp;<span class="tp">Session</span>,
+    inbound: &amp;<span class="tp">Message</span>,
+  ) -> Result&lt;<span class="tp">ContextWindow</span>, AssemblyError&gt; {
+
+    <span class="kw">let mut</span> window = ContextWindow::new(self.max_tokens);
+
+    <span class="cm">// 1. Persona (SOUL.md) + tool schemas</span>
+    window.<span class="fn">set_system</span>(&amp;self.persona, &amp;self.tools);
+
+    <span class="cm">// 2. Memory: today + yesterday daily notes + MEMORY.md</span>
+    <span class="kw">let</span> mem = self.memory.<span class="fn">load_session_context</span>(&amp;session.user_id).<span class="kw">await</span>?;
+    window.<span class="fn">inject_memory</span>(&amp;mem);
+
+    <span class="cm">// 3. Sliding window of chat history</span>
+    <span class="kw">let</span> budget = self.max_tokens / <span class="num">2</span>;
+    window.<span class="fn">append_history</span>(session.<span class="fn">recent_history</span>(budget));
+
+    <span class="cm">// 4. Current message</span>
+    window.<span class="fn">append_user</span>(&amp;inbound.content.text);
+
+    Ok(window)
+  }
+}
+    </div>
+    <div class="code-panel" data-group="ctx" data-lang="Python">
+<span class="cm"># Context assembly — slot-based budget allocation.</span>
+<span class="cm"># Each slot gets a token budget; overflow triggers truncation.</span>
+
+<span class="kw">@dataclass</span>
+<span class="kw">class</span> <span class="tp">ContextWindow</span>:
+  system_prompt: <span class="tp">str</span>
+  messages: list[dict]
+  tokens_used: <span class="tp">int</span> = <span class="num">0</span>
+  token_budget: <span class="tp">int</span> = <span class="num">0</span>
+
+<span class="kw">class</span> <span class="tp">ContextAssembler</span>:
+  <span class="kw">def</span> <span class="fn">__init__</span>(self, max_tokens: <span class="tp">int</span>, persona_path: <span class="tp">str</span>,
+               tools: list[<span class="tp">ToolDef</span>], memory: <span class="tp">MemoryEngine</span>):
+    self.max_tokens = max_tokens
+    self.persona = Path(persona_path).read_text()
+    self.tools = tools
+    self.memory = memory
+
+  <span class="kw">async def</span> <span class="fn">assemble</span>(self, session: <span class="tp">Session</span>, inbound: <span class="tp">Message</span>) -> <span class="tp">ContextWindow</span>:
+    ctx = ContextWindow(token_budget=self.max_tokens)
+
+    <span class="cm"># 1. System prompt: persona + tool JSON schemas</span>
+    tool_defs = <span class="str">"\n"</span>.join(t.schema_json() <span class="kw">for</span> t <span class="kw">in</span> self.tools)
+    ctx.system_prompt = <span class="kw">f</span><span class="str">"{self.persona}\n\n{tool_defs}"</span>
+
+    <span class="cm"># 2. Memory injection</span>
+    mem = <span class="kw">await</span> self.memory.<span class="fn">load_session_context</span>(session.user_id)
+    ctx.messages.append({<span class="str">"role"</span>: <span class="str">"system"</span>, <span class="str">"content"</span>: mem})
+
+    <span class="cm"># 3. Chat history (budget-aware sliding window)</span>
+    history = session.<span class="fn">recent_history</span>(budget=self.max_tokens // <span class="num">2</span>)
+    ctx.messages.extend(history)
+
+    <span class="cm"># 4. Current message</span>
+    ctx.messages.append({
+      <span class="str">"role"</span>: <span class="str">"user"</span>,
+      <span class="str">"content"</span>: inbound.text
+    })
+
+    ctx.tokens_used = <span class="fn">count_tokens</span>(ctx)
+    <span class="kw">return</span> ctx
+    </div>
+    <div class="code-panel" data-group="ctx" data-lang="TypeScript">
+<span class="cm">// Context assembly — functional composition.</span>
+<span class="cm">// Each step is a pure function: ContextWindow → ContextWindow</span>
+
+<span class="kw">interface</span> <span class="tp">ContextWindow</span> {
+  systemPrompt: <span class="tp">string</span>
+  messages: <span class="tp">ChatMessage</span>[]
+  tokensUsed: <span class="tp">number</span>
+  tokenBudget: <span class="tp">number</span>
+}
+
+<span class="kw">class</span> <span class="tp">ContextAssembler</span> {
+  <span class="kw">constructor</span>(
+    <span class="kw">private</span> maxTokens: <span class="tp">number</span>,
+    <span class="kw">private</span> persona: <span class="tp">string</span>,
+    <span class="kw">private</span> tools: <span class="tp">ToolDef</span>[],
+    <span class="kw">private</span> memory: <span class="tp">MemoryEngine</span>,
+  ) {}
+
+  <span class="kw">async</span> <span class="fn">assemble</span>(session: <span class="tp">Session</span>, inbound: <span class="tp">LTDRMessage</span>): <span class="tp">Promise</span>&lt;<span class="tp">ContextWindow</span>&gt; {
+    <span class="kw">const</span> toolSchemas = <span class="kw">this</span>.tools.map(t =&gt; t.toSchema()).join(<span class="str">"\n"</span>)
+    <span class="kw">const</span> mem = <span class="kw">await this</span>.memory.<span class="fn">loadSessionContext</span>(session.userId)
+    <span class="kw">const</span> history = session.<span class="fn">recentHistory</span>(<span class="kw">this</span>.maxTokens / <span class="num">2</span>)
+
+    <span class="kw">return</span> {
+      systemPrompt: <span class="str">`${this.persona}\n\n${toolSchemas}`</span>,
+      messages: [
+        { role: <span class="str">"system"</span>, content: <span class="str">`## Memory\n${mem}`</span> },
+        ...history,
+        { role: <span class="str">"user"</span>, content: inbound.content.text },
+      ],
+      tokensUsed: <span class="fn">countTokens</span>(/* ... */),
+      tokenBudget: <span class="kw">this</span>.maxTokens,
+    }
+  }
+}
+    </div>
+  </div>
+
+  <h3>Reasoning loop (ReAct)</h3>
+
+  <div class="code-group">
+    <div class="code-tabs">
+      <button class="code-tab active" onclick="showTab(this,'react')">Go</button>
+      <button class="code-tab" onclick="showTab(this,'react')">Python</button>
+      <button class="code-tab" onclick="showTab(this,'react')">Rust</button>
+    </div>
+    <div class="code-panel active" data-group="react" data-lang="Go">
+<span class="cm">// The ReAct loop — the core of every LTDR assistant.</span>
+<span class="cm">// Think → (Act → Observe)* → Respond</span>
+
+<span class="kw">type</span> <span class="tp">ModelProvider</span> <span class="kw">interface</span> {
+  <span class="cm">// Send assembled context, get a response (text or tool calls)</span>
+  <span class="fn">Complete</span>(ctx context.Context, window *ContextWindow) (*<span class="tp">ModelResponse</span>, <span class="tp">error</span>)
+}
+
+<span class="kw">type</span> <span class="tp">ModelResponse</span> <span class="kw">struct</span> {
+  Text      <span class="tp">string</span>       <span class="cm">// Final response text (if no tool calls)</span>
+  ToolCalls []<span class="tp">ToolCall</span>   <span class="cm">// Requested tool invocations</span>
+}
+
+<span class="kw">type</span> <span class="tp">ToolCall</span> <span class="kw">struct</span> {
+  ID     <span class="tp">string</span>         <span class="cm">// Unique call ID for matching results</span>
+  Name   <span class="tp">string</span>         <span class="cm">// Tool name from registry</span>
+  Args   json.RawMessage <span class="cm">// Arguments as JSON</span>
+}
+
+<span class="kw">func</span> <span class="fn">RunReActLoop</span>(
+  ctx       context.Context,
+  assembler *<span class="tp">ContextAssembler</span>,
+  provider  <span class="tp">ModelProvider</span>,
+  executor  <span class="tp">ToolExecutor</span>,     <span class="cm">// The "Do" phase</span>
+  session   *<span class="tp">Session</span>,
+  inbound   <span class="tp">Message</span>,
+  maxTurns  <span class="tp">int</span>,              <span class="cm">// Safety limit</span>
+) (<span class="tp">string</span>, <span class="tp">error</span>) {
+
+  window, err := assembler.<span class="fn">Assemble</span>(session, inbound)
+  <span class="kw">if</span> err != <span class="kw">nil</span> { <span class="kw">return</span> <span class="str">""</span>, err }
+
+  <span class="kw">for</span> turn := <span class="num">0</span>; turn &lt; maxTurns; turn++ {
+
+    <span class="cm">// THINK: ask the model</span>
+    resp, err := provider.<span class="fn">Complete</span>(ctx, window)
+    <span class="kw">if</span> err != <span class="kw">nil</span> { <span class="kw">return</span> <span class="str">""</span>, err }
+
+    <span class="cm">// No tool calls → final response → exit loop</span>
+    <span class="kw">if</span> <span class="fn">len</span>(resp.ToolCalls) == <span class="num">0</span> {
+      <span class="kw">return</span> resp.Text, <span class="kw">nil</span>
+    }
+
+    <span class="cm">// ACT + OBSERVE: execute each tool, append results</span>
+    <span class="kw">for</span> _, call := <span class="kw">range</span> resp.ToolCalls {
+      result, err := executor.<span class="fn">Execute</span>(ctx, call)
+      <span class="kw">if</span> err != <span class="kw">nil</span> {
+        result = &amp;ToolResult{Error: err.Error()}
+      }
+
+      <span class="cm">// Append tool result to context for next iteration</span>
+      window.Messages = <span class="kw">append</span>(window.Messages,
+        ChatMessage{Role: <span class="str">"assistant"</span>, ToolCalls: []ToolCall{call}},
+        ChatMessage{Role: <span class="str">"tool"</span>, ToolCallID: call.ID, Content: result.Output},
+      )
+    }
+  }
+
+  <span class="kw">return</span> <span class="str">"[max reasoning turns exceeded]"</span>, <span class="kw">nil</span>
+}
+    </div>
+    <div class="code-panel" data-group="react" data-lang="Python">
+<span class="cm"># The ReAct loop — Python async implementation.</span>
+<span class="cm"># Clean separation: Think (model) → Act (tools) → Observe (results)</span>
+
+<span class="kw">class</span> <span class="tp">ModelProvider</span>(Protocol):
+  <span class="kw">async def</span> <span class="fn">complete</span>(self, window: <span class="tp">ContextWindow</span>) -> <span class="tp">ModelResponse</span>: ...
+
+<span class="kw">@dataclass</span>
+<span class="kw">class</span> <span class="tp">ModelResponse</span>:
+  text: <span class="tp">str</span> = <span class="str">""</span>
+  tool_calls: list[<span class="tp">ToolCall</span>] = field(default_factory=list)
+
+<span class="kw">async def</span> <span class="fn">react_loop</span>(
+  assembler: <span class="tp">ContextAssembler</span>,
+  provider: <span class="tp">ModelProvider</span>,
+  executor: <span class="tp">ToolExecutor</span>,
+  session: <span class="tp">Session</span>,
+  inbound: <span class="tp">Message</span>,
+  max_turns: <span class="tp">int</span> = <span class="num">10</span>,
+) -> <span class="tp">str</span>:
+
+  window = <span class="kw">await</span> assembler.<span class="fn">assemble</span>(session, inbound)
+
+  <span class="kw">for</span> turn <span class="kw">in</span> <span class="fn">range</span>(max_turns):
+
+    <span class="cm"># THINK</span>
+    response = <span class="kw">await</span> provider.<span class="fn">complete</span>(window)
+
+    <span class="cm"># No tool calls → done</span>
+    <span class="kw">if not</span> response.tool_calls:
+      <span class="kw">return</span> response.text
+
+    <span class="cm"># ACT + OBSERVE</span>
+    <span class="kw">for</span> call <span class="kw">in</span> response.tool_calls:
+      <span class="kw">try</span>:
+        result = <span class="kw">await</span> executor.<span class="fn">execute</span>(call)
+      <span class="kw">except</span> ToolError <span class="kw">as</span> e:
+        result = ToolResult(error=<span class="tp">str</span>(e))
+
+      <span class="cm"># Append to context for next loop</span>
+      window.messages.append({
+        <span class="str">"role"</span>: <span class="str">"assistant"</span>,
+        <span class="str">"tool_calls"</span>: [call.to_dict()]
+      })
+      window.messages.append({
+        <span class="str">"role"</span>: <span class="str">"tool"</span>,
+        <span class="str">"tool_call_id"</span>: call.id,
+        <span class="str">"content"</span>: result.output,
+      })
+
+  <span class="kw">return</span> <span class="str">"[max reasoning turns exceeded]"</span>
+    </div>
+    <div class="code-panel" data-group="react" data-lang="Rust">
+<span class="cm">// Trait-based ReAct loop. The compiler enforces the contract.</span>
+
+<span class="kw">#[async_trait]</span>
+<span class="kw">pub trait</span> <span class="tp">ModelProvider</span>: Send + Sync {
+  <span class="kw">async fn</span> <span class="fn">complete</span>(&amp;self, window: &amp;<span class="tp">ContextWindow</span>) -> Result&lt;<span class="tp">ModelResponse</span>, ProviderError&gt;;
+}
+
+<span class="kw">pub async fn</span> <span class="fn">react_loop</span>(
+  assembler: &amp;<span class="tp">ContextAssembler</span>,
+  provider: &amp;<span class="kw">dyn</span> <span class="tp">ModelProvider</span>,
+  executor: &amp;<span class="kw">dyn</span> <span class="tp">ToolExecutor</span>,
+  session: &amp;<span class="kw">mut</span> <span class="tp">Session</span>,
+  inbound: &amp;<span class="tp">Message</span>,
+  max_turns: <span class="tp">usize</span>,
+) -> Result&lt;<span class="tp">String</span>, AgentError&gt; {
+
+  <span class="kw">let mut</span> window = assembler.<span class="fn">assemble</span>(session, inbound).<span class="kw">await</span>?;
+
+  <span class="kw">for</span> _ <span class="kw">in</span> <span class="num">0</span>..max_turns {
+    <span class="kw">let</span> response = provider.<span class="fn">complete</span>(&amp;window).<span class="kw">await</span>?;
+
+    <span class="kw">if</span> response.tool_calls.is_empty() {
+      <span class="kw">return</span> Ok(response.text);
+    }
+
+    <span class="kw">for</span> call <span class="kw">in</span> &amp;response.tool_calls {
+      <span class="kw">let</span> result = executor.<span class="fn">execute</span>(call).<span class="kw">await</span>
+        .unwrap_or_else(|e| ToolResult::error(e));
+
+      window.<span class="fn">push_assistant_tool_call</span>(call);
+      window.<span class="fn">push_tool_result</span>(&amp;call.id, &amp;result.output);
+    }
+  }
+
+  Ok(<span class="str">"[max reasoning turns exceeded]"</span>.into())
+}
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════ PHASE 3: DO ════════════════════════════ -->
+<section class="phase" id="do">
+  <span class="phase-tag tag-do">Phase 3</span>
+  <h2><em>Do</em> — tool execution</h2>
+  <p class="phase-desc">The Do phase executes actions in the real world: web searches, shell commands, API calls, file operations. Every tool runs through a sandboxed executor with capability-based permissions.</p>
+
+  <div class="spec spec-do">
+    <h4>Specification</h4>
+    <ul>
+      <li><strong>ToolRegistry</strong> — A map of tool name → tool definition (JSON Schema) + tool handler (the function that actually executes). Tools are registered at startup; the registry is immutable during a session.</li>
+      <li><strong>ToolExecutor</strong> — Takes a <code>ToolCall</code> from the Think phase, validates the arguments against the registered schema, checks permissions, executes the handler in a sandbox, and returns a <code>ToolResult</code>.</li>
+      <li><strong>Sandbox</strong> — Tool handlers MUST NOT run in the main process. Options: WASM module (IronClaw pattern), subprocess with resource limits, Docker container, or at minimum a restrictive syscall filter. The sandbox grants explicit capabilities: filesystem paths, network hosts, environment variables.</li>
+    </ul>
+    <p><strong>Security requirement:</strong> Default deny. A tool has zero capabilities until explicitly granted. Network access is restricted to approved hosts. Filesystem access is restricted to approved paths. Time limits prevent runaway execution. Every execution is logged with inputs, outputs, duration, and resource usage.</p>
+  </div>
+
+  <h3>Tool registry and executor</h3>
+
+  <div class="code-group">
+    <div class="code-tabs">
+      <button class="code-tab active" onclick="showTab(this,'tool')">Go</button>
+      <button class="code-tab" onclick="showTab(this,'tool')">Rust</button>
+      <button class="code-tab" onclick="showTab(this,'tool')">Python</button>
+    </div>
+    <div class="code-panel active" data-group="tool" data-lang="Go">
+<span class="cm">// Tool registration + sandboxed execution.</span>
+<span class="cm">// Every tool is a function behind a permission boundary.</span>
+
+<span class="kw">type</span> <span class="tp">ToolDef</span> <span class="kw">struct</span> {
+  Name        <span class="tp">string</span>           <span class="cm">// Unique identifier</span>
+  Description <span class="tp">string</span>           <span class="cm">// For the model's context</span>
+  Parameters  json.RawMessage  <span class="cm">// JSON Schema for args</span>
+  Handler     <span class="tp">ToolHandler</span>      <span class="cm">// The function to execute</span>
+  Permissions <span class="tp">Capabilities</span>     <span class="cm">// What this tool is allowed to do</span>
+}
+
+<span class="kw">type</span> <span class="tp">ToolHandler</span> <span class="kw">func</span>(ctx context.Context, args json.RawMessage) (*<span class="tp">ToolResult</span>, <span class="tp">error</span>)
+
+<span class="kw">type</span> <span class="tp">Capabilities</span> <span class="kw">struct</span> {
+  Network    []<span class="tp">string</span>       <span class="cm">// Allowed hostnames</span>
+  Filesystem []<span class="tp">string</span>       <span class="cm">// Allowed paths (read/write)</span>
+  Env        []<span class="tp">string</span>       <span class="cm">// Allowed env var names</span>
+  MaxTimeout time.Duration  <span class="cm">// Max execution time</span>
+  MaxMemory  <span class="tp">int64</span>          <span class="cm">// Max memory in bytes</span>
+}
+
+<span class="kw">type</span> <span class="tp">ToolExecutor</span> <span class="kw">interface</span> {
+  <span class="fn">Execute</span>(ctx context.Context, call ToolCall) (*<span class="tp">ToolResult</span>, <span class="tp">error</span>)
+}
+
+<span class="cm">// ── Example: registering a web search tool ──</span>
+
+<span class="kw">func</span> <span class="fn">NewWebSearchTool</span>(apiKey <span class="tp">string</span>) <span class="tp">ToolDef</span> {
+  <span class="kw">return</span> ToolDef{
+    Name:        <span class="str">"web_search"</span>,
+    Description: <span class="str">"Search the web for current information."</span>,
+    Parameters:  json.RawMessage(<span class="str">`{
+      "type": "object",
+      "properties": {
+        "query": {"type": "string", "description": "Search query"}
+      },
+      "required": ["query"]
+    }`</span>),
+    Handler: <span class="kw">func</span>(ctx context.Context, args json.RawMessage) (*<span class="tp">ToolResult</span>, <span class="tp">error</span>) {
+      <span class="kw">var</span> params <span class="kw">struct</span>{ Query <span class="tp">string</span> }
+      json.Unmarshal(args, &amp;params)
+      results, err := <span class="fn">braveSearch</span>(ctx, apiKey, params.Query)
+      <span class="kw">if</span> err != <span class="kw">nil</span> { <span class="kw">return nil</span>, err }
+      <span class="kw">return</span> &amp;ToolResult{Output: results}, <span class="kw">nil</span>
+    },
+    Permissions: Capabilities{
+      Network:    []<span class="tp">string</span>{<span class="str">"api.search.brave.com"</span>},
+      MaxTimeout: <span class="num">10</span> * time.Second,
+    },
+  }
+}
+    </div>
+    <div class="code-panel" data-group="tool" data-lang="Rust">
+<span class="cm">// Trait-based tool system with capability enforcement.</span>
+
+<span class="kw">#[async_trait]</span>
+<span class="kw">pub trait</span> <span class="tp">Tool</span>: Send + Sync {
+  <span class="kw">fn</span> <span class="fn">name</span>(&amp;self) -> &amp;<span class="tp">str</span>;
+  <span class="kw">fn</span> <span class="fn">description</span>(&amp;self) -> &amp;<span class="tp">str</span>;
+  <span class="kw">fn</span> <span class="fn">parameters_schema</span>(&amp;self) -> serde_json::<span class="tp">Value</span>;
+  <span class="kw">fn</span> <span class="fn">capabilities</span>(&amp;self) -> &amp;<span class="tp">Capabilities</span>;
+  <span class="kw">async fn</span> <span class="fn">execute</span>(&amp;self, args: serde_json::<span class="tp">Value</span>) -> Result&lt;<span class="tp">ToolResult</span>, ToolError&gt;;
+}
+
+<span class="kw">pub struct</span> <span class="tp">SandboxedExecutor</span> {
+  registry: HashMap&lt;<span class="tp">String</span>, <span class="tp">Box&lt;dyn Tool&gt;</span>&gt;,
+}
+
+<span class="kw">impl</span> <span class="tp">SandboxedExecutor</span> {
+  <span class="kw">pub async fn</span> <span class="fn">execute</span>(&amp;self, call: &amp;<span class="tp">ToolCall</span>) -> Result&lt;<span class="tp">ToolResult</span>, ToolError&gt; {
+    <span class="kw">let</span> tool = self.registry.<span class="fn">get</span>(&amp;call.name)
+      .ok_or(ToolError::NotFound(call.name.clone()))?;
+
+    <span class="cm">// Validate args against JSON Schema</span>
+    <span class="fn">validate_schema</span>(tool.<span class="fn">parameters_schema</span>(), &amp;call.args)?;
+
+    <span class="cm">// Enforce capability limits (timeout, memory)</span>
+    <span class="kw">let</span> caps = tool.<span class="fn">capabilities</span>();
+    tokio::time::timeout(caps.max_timeout, <span class="kw">async</span> {
+      tool.<span class="fn">execute</span>(call.args.clone()).<span class="kw">await</span>
+    }).<span class="kw">await</span>
+      .map_err(|_| ToolError::Timeout)?
+  }
+}
+    </div>
+    <div class="code-panel" data-group="tool" data-lang="Python">
+<span class="cm"># Decorator-based tool registration. Clean, Pythonic.</span>
+<span class="cm"># @tool registers both the schema and the handler.</span>
+
+<span class="kw">from</span> functools <span class="kw">import</span> wraps
+<span class="kw">import</span> asyncio
+
+<span class="kw">class</span> <span class="tp">ToolRegistry</span>:
+  <span class="kw">def</span> <span class="fn">__init__</span>(self):
+    self._tools: dict[<span class="tp">str</span>, <span class="tp">ToolDef</span>] = {}
+
+  <span class="kw">def</span> <span class="fn">tool</span>(self, name: <span class="tp">str</span>, description: <span class="tp">str</span>,
+           schema: dict, capabilities: <span class="tp">Capabilities</span> | <span class="tp">None</span> = <span class="kw">None</span>):
+    <span class="str">"""Decorator to register a tool handler."""</span>
+    <span class="kw">def</span> <span class="fn">decorator</span>(func):
+      self._tools[name] = ToolDef(
+        name=name, description=description,
+        parameters=schema, handler=func,
+        capabilities=capabilities <span class="kw">or</span> Capabilities(),
+      )
+      <span class="kw">return</span> func
+    <span class="kw">return</span> decorator
+
+  <span class="kw">async def</span> <span class="fn">execute</span>(self, call: <span class="tp">ToolCall</span>) -> <span class="tp">ToolResult</span>:
+    tool = self._tools.get(call.name)
+    <span class="kw">if not</span> tool:
+      <span class="kw">raise</span> ToolError(<span class="kw">f</span><span class="str">"Unknown tool: {call.name}"</span>)
+    <span class="fn">validate_json_schema</span>(tool.parameters, call.args)
+    <span class="kw">return await</span> asyncio.wait_for(
+      tool.handler(**call.args),
+      timeout=tool.capabilities.max_timeout,
+    )
+
+<span class="cm"># ── Usage ──</span>
+
+registry = ToolRegistry()
+
+@registry.<span class="fn">tool</span>(
+  name=<span class="str">"web_search"</span>,
+  description=<span class="str">"Search the web for current information."</span>,
+  schema={<span class="str">"type"</span>: <span class="str">"object"</span>, <span class="str">"properties"</span>: {
+    <span class="str">"query"</span>: {<span class="str">"type"</span>: <span class="str">"string"</span>}
+  }, <span class="str">"required"</span>: [<span class="str">"query"</span>]},
+  capabilities=Capabilities(
+    network=[<span class="str">"api.search.brave.com"</span>],
+    max_timeout=<span class="num">10.0</span>,
+  ),
+)
+<span class="kw">async def</span> <span class="fn">web_search</span>(query: <span class="tp">str</span>) -> <span class="tp">ToolResult</span>:
+  results = <span class="kw">await</span> <span class="fn">brave_search</span>(query)
+  <span class="kw">return</span> ToolResult(output=results)
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════ PHASE 4: REMEMBER ════════════════════════════ -->
+<section class="phase" id="remember">
+  <span class="phase-tag tag-remember">Phase 4</span>
+  <h2><em>Remember</em> — persistent memory</h2>
+  <p class="phase-desc">The Remember phase persists knowledge across sessions. Two layers: ephemeral daily notes (raw journal) and curated long-term memory (distilled knowledge). Hybrid search retrieves relevant context when needed.</p>
+
+  <div class="spec spec-remember">
+    <h4>Specification</h4>
+    <p>The <strong>MemoryEngine</strong> satisfies this contract:</p>
+    <ul>
+      <li><code>write_daily(user_id, content)</code> — Append to today's daily note. Append-only; never overwrite.</li>
+      <li><code>write_curated(user_id, content)</code> — Write to long-term memory. Idempotent updates by key/section.</li>
+      <li><code>load_session_context(user_id)</code> — Return today's + yesterday's daily notes + full curated memory. Called once at session start.</li>
+      <li><code>search(user_id, query, opts)</code> — Hybrid search across all memory files. Returns ranked results with source attribution.</li>
+      <li><code>flush_before_compaction(session)</code> — The critical invariant. Before any context compaction, write all important context to daily notes. MUST be silent (no user-visible output).</li>
+    </ul>
+    <p><strong>File-first requirement:</strong> The canonical state MUST be readable plain files (Markdown recommended). Database indexes are acceleration layers, not sources of truth. A user MUST be able to <code>cat</code> their memory files and understand what the agent knows.</p>
+    <p><strong>Privacy requirement:</strong> Curated memory (MEMORY.md) MUST only be loaded in private/DM sessions. It MUST never be injected into group chat context. Daily notes MAY be loaded in group contexts only if explicitly configured.</p>
+  </div>
+
+  <h3>Memory engine</h3>
+
+  <div class="code-group">
+    <div class="code-tabs">
+      <button class="code-tab active" onclick="showTab(this,'mem')">Go</button>
+      <button class="code-tab" onclick="showTab(this,'mem')">Rust</button>
+      <button class="code-tab" onclick="showTab(this,'mem')">Python</button>
+    </div>
+    <div class="code-panel active" data-group="mem" data-lang="Go">
+<span class="cm">// MemoryEngine — the persistence contract.</span>
+<span class="cm">// Implementations can range from flat files to PostgreSQL+pgvector.</span>
+
+<span class="kw">type</span> <span class="tp">MemoryEngine</span> <span class="kw">interface</span> {
+  <span class="cm">// Write to today's daily note (append-only)</span>
+  <span class="fn">WriteDaily</span>(userID <span class="tp">string</span>, content <span class="tp">string</span>) <span class="tp">error</span>
+
+  <span class="cm">// Write/update curated long-term memory</span>
+  <span class="fn">WriteCurated</span>(userID <span class="tp">string</span>, section <span class="tp">string</span>, content <span class="tp">string</span>) <span class="tp">error</span>
+
+  <span class="cm">// Load today + yesterday + MEMORY.md for session start</span>
+  <span class="fn">LoadSessionContext</span>(userID <span class="tp">string</span>) (<span class="tp">string</span>, <span class="tp">error</span>)
+
+  <span class="cm">// Hybrid search: vector similarity + keyword match</span>
+  <span class="fn">Search</span>(userID <span class="tp">string</span>, query <span class="tp">string</span>, opts SearchOpts) ([]<span class="tp">SearchResult</span>, <span class="tp">error</span>)
+
+  <span class="cm">// THE CRITICAL INVARIANT: persist before compaction</span>
+  <span class="fn">FlushBeforeCompaction</span>(session *Session) <span class="tp">error</span>
+}
+
+<span class="kw">type</span> <span class="tp">SearchOpts</span> <span class="kw">struct</span> {
+  MaxResults    <span class="tp">int</span>
+  VectorWeight  <span class="tp">float64</span>  <span class="cm">// Default: 0.7</span>
+  KeywordWeight <span class="tp">float64</span>  <span class="cm">// Default: 0.3</span>
+  DecayHalfLife <span class="tp">int</span>      <span class="cm">// Days. 0 = no decay</span>
+  MMRLambda     <span class="tp">float64</span>  <span class="cm">// Diversity parameter. Default: 0.7</span>
+}
+
+<span class="cm">// ── File-based implementation (reference) ──</span>
+
+<span class="kw">type</span> <span class="tp">FileMemory</span> <span class="kw">struct</span> {
+  workspace <span class="tp">string</span>  <span class="cm">// e.g., ~/.assistant/workspace</span>
+  index     *<span class="tp">SearchIndex</span>  <span class="cm">// SQLite + sqlite-vec + FTS5</span>
+}
+
+<span class="kw">func</span> (fm *<span class="tp">FileMemory</span>) <span class="fn">WriteDaily</span>(userID, content <span class="tp">string</span>) <span class="tp">error</span> {
+  date := time.Now().Format(<span class="str">"2006-01-02"</span>)
+  path := filepath.Join(fm.workspace, <span class="str">"memory"</span>, date+<span class="str">".md"</span>)
+
+  f, err := os.OpenFile(path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, <span class="num">0600</span>)
+  <span class="kw">if</span> err != <span class="kw">nil</span> { <span class="kw">return</span> err }
+  <span class="kw">defer</span> f.Close()
+
+  timestamp := time.Now().Format(<span class="str">"15:04"</span>)
+  _, err = fmt.Fprintf(f, <span class="str">"\n## %s\n%s\n"</span>, timestamp, content)
+  <span class="kw">if</span> err != <span class="kw">nil</span> { <span class="kw">return</span> err }
+
+  <span class="cm">// Re-index for search</span>
+  <span class="kw">return</span> fm.index.<span class="fn">IndexFile</span>(path)
+}
+
+<span class="kw">func</span> (fm *<span class="tp">FileMemory</span>) <span class="fn">LoadSessionContext</span>(userID <span class="tp">string</span>) (<span class="tp">string</span>, <span class="tp">error</span>) {
+  today := time.Now().Format(<span class="str">"2006-01-02"</span>)
+  yesterday := time.Now().AddDate(<span class="num">0</span>, <span class="num">0</span>, <span class="num">-1</span>).Format(<span class="str">"2006-01-02"</span>)
+
+  <span class="kw">var</span> ctx strings.Builder
+
+  <span class="cm">// Load curated long-term memory</span>
+  curated, _ := os.ReadFile(filepath.Join(fm.workspace, <span class="str">"MEMORY.md"</span>))
+  ctx.WriteString(<span class="str">"## Long-term memory\n"</span>)
+  ctx.Write(curated)
+
+  <span class="cm">// Load today + yesterday daily notes</span>
+  <span class="kw">for</span> _, date := <span class="kw">range</span> []<span class="tp">string</span>{yesterday, today} {
+    data, err := os.ReadFile(filepath.Join(fm.workspace, <span class="str">"memory"</span>, date+<span class="str">".md"</span>))
+    <span class="kw">if</span> err != <span class="kw">nil</span> { <span class="kw">continue</span> }
+    ctx.WriteString(fmt.Sprintf(<span class="str">"\n## Daily notes: %s\n"</span>, date))
+    ctx.Write(data)
+  }
+
+  <span class="kw">return</span> ctx.String(), <span class="kw">nil</span>
+}
+    </div>
+    <div class="code-panel" data-group="mem" data-lang="Rust">
+<span class="cm">// Trait-based memory engine. Swap implementations at compile time</span>
+<span class="cm">// or runtime via trait objects.</span>
+
+<span class="kw">#[async_trait]</span>
+<span class="kw">pub trait</span> <span class="tp">MemoryEngine</span>: Send + Sync {
+  <span class="kw">async fn</span> <span class="fn">write_daily</span>(&amp;self, user_id: &amp;<span class="tp">str</span>, content: &amp;<span class="tp">str</span>) -> Result&lt;(), MemError&gt;;
+  <span class="kw">async fn</span> <span class="fn">write_curated</span>(&amp;self, user_id: &amp;<span class="tp">str</span>, section: &amp;<span class="tp">str</span>, content: &amp;<span class="tp">str</span>) -> Result&lt;(), MemError&gt;;
+  <span class="kw">async fn</span> <span class="fn">load_session_context</span>(&amp;self, user_id: &amp;<span class="tp">str</span>) -> Result&lt;<span class="tp">String</span>, MemError&gt;;
+  <span class="kw">async fn</span> <span class="fn">search</span>(&amp;self, user_id: &amp;<span class="tp">str</span>, query: &amp;<span class="tp">str</span>, opts: <span class="tp">SearchOpts</span>) -> Result&lt;Vec&lt;<span class="tp">SearchResult</span>&gt;, MemError&gt;;
+  <span class="kw">async fn</span> <span class="fn">flush_before_compaction</span>(&amp;self, session: &amp;<span class="tp">Session</span>) -> Result&lt;(), MemError&gt;;
+}
+
+<span class="cm">// File-based implementation uses:</span>
+<span class="cm">// - std::fs for file I/O (MEMORY.md, daily notes)</span>
+<span class="cm">// - rusqlite + sqlite-vec for vector search</span>
+<span class="cm">// - rusqlite FTS5 for keyword search</span>
+<span class="cm">// - chrono for temporal decay scoring</span>
+
+<span class="kw">pub struct</span> <span class="tp">FileMemory</span> {
+  workspace: <span class="tp">PathBuf</span>,
+  index: <span class="tp">SearchIndex</span>,    <span class="cm">// SQLite-backed hybrid search</span>
+}
+
+<span class="kw">impl</span> <span class="tp">FileMemory</span> {
+  <span class="kw">pub async fn</span> <span class="fn">write_daily</span>(&amp;self, user_id: &amp;<span class="tp">str</span>, content: &amp;<span class="tp">str</span>) -> Result&lt;(), MemError&gt; {
+    <span class="kw">let</span> date = Utc::now().format(<span class="str">"%Y-%m-%d"</span>).to_string();
+    <span class="kw">let</span> path = self.workspace.join(<span class="str">"memory"</span>).join(<span class="kw">format!</span>(<span class="str">"{date}.md"</span>));
+
+    <span class="kw">let mut</span> file = OpenOptions::new()
+      .create(<span class="kw">true</span>).append(<span class="kw">true</span>)
+      .mode(<span class="num">0o600</span>)  <span class="cm">// Owner read/write only</span>
+      .open(&amp;path)?;
+
+    <span class="kw">let</span> time = Utc::now().format(<span class="str">"%H:%M"</span>);
+    writeln!(file, <span class="str">"\n## {time}\n{content}"</span>)?;
+
+    self.index.<span class="fn">reindex_file</span>(&amp;path).<span class="kw">await</span>
+  }
+}
+    </div>
+    <div class="code-panel" data-group="mem" data-lang="Python">
+<span class="cm"># Memory engine — Protocol-based, file-first.</span>
+<span class="cm"># The search index (SQLite + embeddings) accelerates but never replaces files.</span>
+
+<span class="kw">class</span> <span class="tp">MemoryEngine</span>(Protocol):
+  <span class="kw">async def</span> <span class="fn">write_daily</span>(self, user_id: <span class="tp">str</span>, content: <span class="tp">str</span>) -> <span class="tp">None</span>: ...
+  <span class="kw">async def</span> <span class="fn">write_curated</span>(self, user_id: <span class="tp">str</span>, section: <span class="tp">str</span>, content: <span class="tp">str</span>) -> <span class="tp">None</span>: ...
+  <span class="kw">async def</span> <span class="fn">load_session_context</span>(self, user_id: <span class="tp">str</span>) -> <span class="tp">str</span>: ...
+  <span class="kw">async def</span> <span class="fn">search</span>(self, user_id: <span class="tp">str</span>, query: <span class="tp">str</span>, opts: <span class="tp">SearchOpts</span>) -> list[<span class="tp">SearchResult</span>]: ...
+  <span class="kw">async def</span> <span class="fn">flush_before_compaction</span>(self, session: <span class="tp">Session</span>) -> <span class="tp">None</span>: ...
+
+<span class="cm"># ── File-based reference implementation ──</span>
+
+<span class="kw">class</span> <span class="tp">FileMemory</span>:
+  <span class="kw">def</span> <span class="fn">__init__</span>(self, workspace: Path, embedder: <span class="tp">Embedder</span>):
+    self.workspace = workspace
+    self.index = SearchIndex(workspace / <span class="str">".index.sqlite"</span>, embedder)
+
+  <span class="kw">async def</span> <span class="fn">write_daily</span>(self, user_id: <span class="tp">str</span>, content: <span class="tp">str</span>):
+    date = datetime.now().strftime(<span class="str">"%Y-%m-%d"</span>)
+    path = self.workspace / <span class="str">"memory"</span> / <span class="kw">f</span><span class="str">"{date}.md"</span>
+    path.parent.mkdir(parents=<span class="kw">True</span>, exist_ok=<span class="kw">True</span>)
+
+    time_str = datetime.now().strftime(<span class="str">"%H:%M"</span>)
+    <span class="kw">with</span> <span class="fn">open</span>(path, <span class="str">"a"</span>) <span class="kw">as</span> f:
+      f.write(<span class="kw">f</span><span class="str">"\n## {time_str}\n{content}\n"</span>)
+
+    <span class="cm"># Update search index</span>
+    <span class="kw">await</span> self.index.<span class="fn">reindex_file</span>(path)
+
+  <span class="kw">async def</span> <span class="fn">search</span>(self, user_id, query, opts):
+    <span class="cm"># 1. Vector search (semantic similarity)</span>
+    vec_results = <span class="kw">await</span> self.index.<span class="fn">vector_search</span>(query, opts.max_results * <span class="num">2</span>)
+
+    <span class="cm"># 2. BM25 keyword search</span>
+    kw_results = <span class="kw">await</span> self.index.<span class="fn">fts5_search</span>(query, opts.max_results * <span class="num">2</span>)
+
+    <span class="cm"># 3. Hybrid merge with configurable weights</span>
+    merged = <span class="fn">hybrid_rank</span>(vec_results, kw_results,
+                         opts.vector_weight, opts.keyword_weight)
+
+    <span class="cm"># 4. Temporal decay (recent results rank higher)</span>
+    <span class="kw">if</span> opts.decay_half_life > <span class="num">0</span>:
+      merged = <span class="fn">apply_temporal_decay</span>(merged, opts.decay_half_life)
+
+    <span class="cm"># 5. MMR diversity re-ranking (deduplicate similar results)</span>
+    <span class="kw">return</span> <span class="fn">mmr_rerank</span>(merged, opts.mmr_lambda, opts.max_results)
+    </div>
+  </div>
+
+  <div class="callout callout-remember">
+    <strong>The compaction invariant:</strong> Before the context window is compressed, the agent MUST run a silent housekeeping turn to write any important context to daily notes. Without this, decisions and preferences that exist only in the conversation history will be lost when older messages are summarized. This is the single most important reliability mechanism in the entire standard.
+  </div>
+</section>
+
+<!-- ════════════════════════════ COMPOSITION ════════════════════════════ -->
+<section class="phase" id="composition">
+  <span class="phase-tag tag-standard">Composition</span>
+  <h2>Wiring it <em>together</em></h2>
+  <p class="phase-desc">The four phases compose into a single event loop. Here's the complete orchestration — the main function that ties Listen, Think, Do, and Remember into a running assistant.</p>
+
+  <div class="code-group">
+    <div class="code-tabs">
+      <button class="code-tab active" onclick="showTab(this,'main')">Go</button>
+      <button class="code-tab" onclick="showTab(this,'main')">Python</button>
+      <button class="code-tab" onclick="showTab(this,'main')">Rust</button>
+    </div>
+    <div class="code-panel active" data-group="main" data-lang="Go">
+<span class="cm">// main.go — A complete LTDR assistant in ~60 lines.</span>
+<span class="cm">// This IS the architecture. Everything else is implementation detail.</span>
+
+<span class="kw">func</span> <span class="fn">main</span>() {
+  cfg := <span class="fn">LoadConfig</span>(<span class="str">"config.toml"</span>)
+  ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
+  <span class="kw">defer</span> cancel()
+
+  <span class="cm">// ── Initialize the four phases ──</span>
+
+  <span class="cm">// REMEMBER: memory engine (file-based + SQLite index)</span>
+  memory := <span class="fn">NewFileMemory</span>(cfg.Workspace, <span class="fn">NewEmbedder</span>(cfg.EmbeddingProvider))
+
+  <span class="cm">// DO: tool registry with sandboxed execution</span>
+  tools := <span class="fn">NewToolRegistry</span>()
+  tools.<span class="fn">Register</span>(<span class="fn">NewWebSearchTool</span>(cfg.SearchAPIKey))
+  tools.<span class="fn">Register</span>(<span class="fn">NewShellTool</span>(cfg.ShellPermissions))
+  executor := <span class="fn">NewSandboxedExecutor</span>(tools)
+
+  <span class="cm">// THINK: context assembler + model provider</span>
+  persona := <span class="fn">LoadFile</span>(cfg.Workspace + <span class="str">"/SOUL.md"</span>)
+  assembler := <span class="fn">NewContextAssembler</span>(cfg.MaxTokens, persona, tools.<span class="fn">Definitions</span>(), memory)
+  provider := <span class="fn">NewModelProvider</span>(cfg.Model)  <span class="cm">// Claude, GPT, Ollama, LM Studio...</span>
+
+  <span class="cm">// LISTEN: channel adapters</span>
+  sessions := <span class="fn">NewSessionManager</span>()
+  adapters := []<span class="tp">ChannelAdapter</span>{
+    <span class="fn">NewTelegramAdapter</span>(cfg.TelegramToken),
+    <span class="fn">NewCLIAdapter</span>(),  <span class="cm">// Terminal interface</span>
+  }
+
+  <span class="cm">// ── The event loop ──</span>
+
+  <span class="kw">for</span> _, adapter := <span class="kw">range</span> adapters {
+    adapter.<span class="fn">OnMessage</span>(<span class="kw">func</span>(msg Message) {
+      session := sessions.<span class="fn">GetOrCreate</span>(msg.Source.UserID)
+
+      <span class="cm">// Acquire the session lane (single-writer concurrency)</span>
+      session.Lane.<span class="fn">Enqueue</span>(<span class="kw">func</span>() {
+        <span class="cm">// THINK + DO: ReAct loop (calls tools as needed)</span>
+        response, err := <span class="fn">RunReActLoop</span>(ctx, assembler, provider, executor, session, msg, <span class="num">10</span>)
+        <span class="kw">if</span> err != <span class="kw">nil</span> {
+          response = <span class="str">"Sorry, I encountered an error: "</span> + err.Error()
+        }
+
+        <span class="cm">// REMEMBER: write conversation to daily notes</span>
+        memory.<span class="fn">WriteDaily</span>(msg.Source.UserID,
+          fmt.Sprintf(<span class="str">"User: %s\nAssistant: %s"</span>, msg.Content.Text, response))
+
+        <span class="cm">// LISTEN (outbound): send response back through the same channel</span>
+        adapter.<span class="fn">Send</span>(ctx, Message{Content: Content{Text: response}}, msg.Source.UserID)
+      })
+    })
+    adapter.<span class="fn">Start</span>(ctx)
+  }
+
+  <span class="cm">// Block until shutdown signal</span>
+  &lt;-ctx.Done()
+  <span class="kw">for</span> _, a := <span class="kw">range</span> adapters { a.<span class="fn">Stop</span>(ctx) }
+}
+    </div>
+    <div class="code-panel" data-group="main" data-lang="Python">
+<span class="cm"># main.py — A complete LTDR assistant.</span>
+<span class="cm"># The entire architecture in one readable flow.</span>
+
+<span class="kw">import</span> asyncio
+<span class="kw">from</span> pathlib <span class="kw">import</span> Path
+
+<span class="kw">async def</span> <span class="fn">main</span>():
+  cfg = <span class="fn">load_config</span>(<span class="str">"config.toml"</span>)
+
+  <span class="cm"># ── Initialize the four phases ──</span>
+
+  <span class="cm"># REMEMBER</span>
+  memory = FileMemory(
+    workspace=Path(cfg.workspace),
+    embedder=<span class="fn">Embedder</span>(cfg.embedding_provider),
+  )
+
+  <span class="cm"># DO</span>
+  tools = ToolRegistry()
+  tools.register(<span class="fn">web_search_tool</span>(cfg.search_api_key))
+  tools.register(<span class="fn">shell_tool</span>(cfg.shell_permissions))
+
+  <span class="cm"># THINK</span>
+  persona = Path(cfg.workspace, <span class="str">"SOUL.md"</span>).read_text()
+  assembler = ContextAssembler(cfg.max_tokens, persona, tools.definitions(), memory)
+  provider = <span class="fn">ModelProvider</span>(cfg.model)
+
+  <span class="cm"># LISTEN</span>
+  sessions = SessionManager()
+  adapters = [
+    TelegramAdapter(cfg.telegram_token),
+    CLIAdapter(),
+  ]
+
+  <span class="cm"># ── The event loop ──</span>
+
+  <span class="kw">async def</span> <span class="fn">handle_message</span>(msg: <span class="tp">Message</span>, adapter: <span class="tp">ChannelAdapter</span>):
+    session = sessions.<span class="fn">get_or_create</span>(msg.source.user_id)
+
+    <span class="cm"># THINK + DO</span>
+    <span class="kw">async with</span> session.lane:  <span class="cm"># Single-writer lock</span>
+      response = <span class="kw">await</span> <span class="fn">react_loop</span>(
+        assembler, provider, tools, session, msg, max_turns=<span class="num">10</span>
+      )
+
+    <span class="cm"># REMEMBER</span>
+    <span class="kw">await</span> memory.<span class="fn">write_daily</span>(
+      msg.source.user_id,
+      <span class="kw">f</span><span class="str">"User: {msg.text}\nAssistant: {response}"</span>
+    )
+
+    <span class="cm"># LISTEN (outbound)</span>
+    <span class="kw">await</span> adapter.<span class="fn">send</span>(
+      Message(text=response), msg.source.user_id
+    )
+
+  <span class="kw">for</span> adapter <span class="kw">in</span> adapters:
+    adapter.<span class="fn">on_message</span>(<span class="kw">lambda</span> msg, a=adapter: <span class="fn">handle_message</span>(msg, a))
+
+  <span class="kw">await</span> asyncio.<span class="fn">gather</span>(*[a.<span class="fn">start</span>() <span class="kw">for</span> a <span class="kw">in</span> adapters])
+
+asyncio.<span class="fn">run</span>(<span class="fn">main</span>())
+    </div>
+    <div class="code-panel" data-group="main" data-lang="Rust">
+<span class="cm">// main.rs — A complete LTDR assistant.</span>
+<span class="cm">// Compile-time safety for the entire pipeline.</span>
+
+<span class="kw">#[tokio::main]</span>
+<span class="kw">async fn</span> <span class="fn">main</span>() -> Result&lt;(), Box&lt;<span class="kw">dyn</span> std::error::Error&gt;&gt; {
+  <span class="kw">let</span> cfg = Config::load(<span class="str">"config.toml"</span>)?;
+
+  <span class="cm">// REMEMBER</span>
+  <span class="kw">let</span> memory = FileMemory::new(&amp;cfg.workspace, Embedder::new(&amp;cfg.embedding));
+
+  <span class="cm">// DO</span>
+  <span class="kw">let mut</span> registry = ToolRegistry::new();
+  registry.register(WebSearchTool::new(&amp;cfg.search_key));
+  registry.register(ShellTool::new(&amp;cfg.shell_perms));
+  <span class="kw">let</span> executor = SandboxedExecutor::new(registry);
+
+  <span class="cm">// THINK</span>
+  <span class="kw">let</span> persona = std::fs::read_to_string(cfg.workspace.join(<span class="str">"SOUL.md"</span>))?;
+  <span class="kw">let</span> assembler = ContextAssembler::new(cfg.max_tokens, persona, &amp;executor);
+  <span class="kw">let</span> provider = ModelProvider::new(&amp;cfg.model);
+
+  <span class="cm">// LISTEN</span>
+  <span class="kw">let</span> sessions = Arc::new(SessionManager::new());
+  <span class="kw">let</span> (tx, <span class="kw">mut</span> rx) = tokio::sync::mpsc::channel::&lt;(Message, Arc&lt;<span class="kw">dyn</span> ChannelAdapter&gt;)&gt;(<span class="num">256</span>);
+
+  <span class="cm">// Start adapters</span>
+  <span class="kw">let</span> tg = Arc::new(TelegramAdapter::new(&amp;cfg.telegram_token, tx.clone()));
+  tg.start().<span class="kw">await</span>?;
+
+  <span class="cm">// Event loop</span>
+  <span class="kw">while let</span> Some((msg, adapter)) = rx.recv().<span class="kw">await</span> {
+    <span class="kw">let</span> session = sessions.get_or_create(&amp;msg.source.user_id);
+    <span class="kw">let</span> _guard = session.lane.lock().<span class="kw">await</span>;
+
+    <span class="cm">// THINK + DO</span>
+    <span class="kw">let</span> response = react_loop(&amp;assembler, &amp;provider, &amp;executor, &amp;session, &amp;msg, <span class="num">10</span>).<span class="kw">await</span>?;
+
+    <span class="cm">// REMEMBER</span>
+    memory.write_daily(&amp;msg.source.user_id,
+      &amp;<span class="kw">format!</span>(<span class="str">"User: {}\nAssistant: {}"</span>, msg.content.text, response)).<span class="kw">await</span>?;
+
+    <span class="cm">// LISTEN (outbound)</span>
+    adapter.send(&amp;Message::text(&amp;response), &amp;msg.source.user_id).<span class="kw">await</span>?;
+  }
+
+  Ok(())
+}
+    </div>
+  </div>
+
+  <div class="callout callout-neutral">
+    <strong>That's the entire architecture.</strong> Everything else — which embedding model, which LLM provider, which messaging platform, which database, which sandbox technology — is an implementation choice behind a pluggable interface. The LTDR standard defines the contracts between phases, not the implementations within them. Build with the tools your threat model demands.
+  </div>
+</section>
+
+<!-- ════════════════════════════ EXAMPLES ════════════════════════════ -->
+<section class="phase" id="examples">
+  <span class="phase-tag tag-standard">Reference builds</span>
+  <h2>Example <em>implementations</em></h2>
+  <p class="phase-desc">Four reference architectures showing how the LTDR standard adapts to different deployment targets, security requirements, and team sizes.</p>
+
+  <div class="card-grid">
+    <div class="card" style="border-left:3px solid var(--listen)">
+      <h4>Minimal: CLI-only assistant</h4>
+      <p><strong>~200 lines.</strong> Single Go binary. No messaging platform — just stdin/stdout. SQLite for memory. Ollama for local inference. Perfect learning project to understand the four phases before adding complexity.</p>
+      <div class="code-single" style="margin-top:12px;font-size:12px">
+<span class="cm">// Entire stack:</span>
+Listen:    stdin readline loop
+Think:     Ollama HTTP API
+Do:        shell exec (sandboxed)
+Remember:  flat Markdown files
+Search:    grep (no vector DB)
+Binary:    ~8MB, zero dependencies
+      </div>
+    </div>
+
+    <div class="card" style="border-left:3px solid var(--think)">
+      <h4>Standard: multi-channel assistant</h4>
+      <p><strong>~2,000 lines.</strong> Telegram + Discord + CLI. Hybrid memory search with sqlite-vec. Cloud LLM (Claude or GPT). Web search + shell tools. The "OpenClaw equivalent" without OpenClaw.</p>
+      <div class="code-single" style="margin-top:12px;font-size:12px">
+<span class="cm">// Stack choices:</span>
+Listen:    Telegram + Discord adapters
+Think:     Claude API via Anthropic SDK
+Do:        Web search + sandboxed shell
+Remember:  Markdown + SQLite + sqlite-vec
+Search:    Hybrid vector + FTS5 + decay
+Deploy:    Mac Mini, systemd service
+      </div>
+    </div>
+
+    <div class="card" style="border-left:3px solid var(--do)">
+      <h4>Hardened: zero-trust assistant</h4>
+      <p><strong>Rust + WASM.</strong> Every tool runs in a WebAssembly sandbox with capability-based permissions. Encrypted memory at rest. mTLS for all network calls. Audit log for every action. Government cloud deployable.</p>
+      <div class="code-single" style="margin-top:12px;font-size:12px">
+<span class="cm">// Stack choices:</span>
+Listen:    Rust adapters (teloxide, serenity)
+Think:     Claude API over mTLS
+Do:        wasmtime sandbox, capability perms
+Remember:  PostgreSQL + pgvector + RLS
+Search:    pgvector + pg_trgm + decay
+Deploy:    Government cloud, Terraform/IaC
+      </div>
+    </div>
+
+    <div class="card" style="border-left:3px solid var(--remember)">
+      <h4>Swarm: multi-agent dispatch</h4>
+      <p><strong>Polyglot.</strong> Go gateway catches tasks from messaging channels. Python orchestrator classifies and routes to specialized subagents. Each agent has its own memory scope. Federated memory syncs shared context.</p>
+      <div class="code-single" style="margin-top:12px;font-size:12px">
+<span class="cm">// Stack choices:</span>
+Listen:    Go gateway (goroutines)
+Think:     Python orchestrator + subagents
+Do:        Per-agent tool registries
+Remember:  Federated memory (shared + private)
+Search:    Per-agent SQLite + shared pgvector
+Comms:     gRPC between gateway ↔ orchestrator
+      </div>
+    </div>
+  </div>
+
+  <h3>File system layout (standard)</h3>
+  <p>Every LTDR implementation uses this workspace structure. The files ARE the state — databases are indexes that can be rebuilt from the files.</p>
+
+  <div class="code-single">
+~/.assistant/
+├── <span class="fn">config.toml</span>          <span class="cm"># All settings: model, channels, tools, search</span>
+├── <span class="fn">SOUL.md</span>              <span class="cm"># Agent persona and behavioral rules</span>
+├── <span class="fn">MEMORY.md</span>            <span class="cm"># Curated long-term knowledge (private sessions only)</span>
+├── memory/
+│   ├── <span class="fn">2026-03-18.md</span>    <span class="cm"># Today's daily notes (append-only)</span>
+│   ├── <span class="fn">2026-03-17.md</span>    <span class="cm"># Yesterday</span>
+│   └── ...
+├── sessions/            <span class="cm"># Saved conversation transcripts (optional)</span>
+├── tools/               <span class="cm"># Custom tool definitions + handlers</span>
+├── .index.sqlite        <span class="cm"># Search index (rebuild from files if lost)</span>
+└── .audit/              <span class="cm"># Trace logs for every agent action</span>
+    └── <span class="fn">2026-03-18.jsonl</span> <span class="cm"># One JSON line per action</span>
+  </div>
+
+  <details>
+    <summary>Why file-first matters for security</summary>
+    <div class="detail-body">
+      <p>When your agent's knowledge lives in plain Markdown files, you get properties that no database provides: you can <code>diff</code> what changed between sessions, <code>grep</code> for sensitive content before sharing, <code>git</code> version your agent's knowledge, <code>rsync</code> backups to encrypted storage, and — critically — read everything your agent knows with nothing but a text editor. There's no query language to learn, no admin console to compromise, no proprietary format to decode. If the agent "forgets" something, you open the file and see exactly why: either the write never happened, or the search index missed it. Transparent, auditable, debuggable.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>Implementing progressive trust</summary>
+    <div class="detail-body">
+      <p>Start every capability at level 0 (ask before every invocation). As you build confidence, promote to level 1 (ask for new action types, auto-approve known patterns), then level 2 (auto-approve within a policy boundary), then level 3 (fully autonomous within sandbox). Each promotion is an explicit edit to <code>config.toml</code> — not something the agent can self-escalate. The audit log records every action at every trust level, so you can retroactively review what autonomous decisions the agent made and demote if needed.</p>
+    </div>
+  </details>
+</section>
+
+<!-- ════════════════════════════ SCENARIOS ════════════════════════════ -->
+<section class="phase" id="scenarios">
+  <span class="phase-tag tag-standard">Agent scenarios</span>
+  <h2>Where custom LTDR <em>wins</em></h2>
+  <p class="phase-desc">OpenClaw is 430,000 lines of TypeScript you didn't write and can't fully audit. For many use cases, that's fine. For these scenarios, owning every line of code isn't a preference — it's a requirement. Each scenario maps the LTDR phases to domain-specific implementations that a general-purpose framework can't safely provide.</p>
+
+  <div class="callout callout-neutral">
+    <strong>When to build your own:</strong> If your agent handles regulated data, runs air-gapped, requires domain-specific tool sandboxing, needs a custom memory topology, or must pass a compliance audit where "we use an open-source framework" isn't an acceptable answer — build with LTDR primitives. If you're automating personal tasks on a Mac Mini, OpenClaw is great.
+  </div>
+
+  <!-- ── Scenario 1: Healthcare ── -->
+  <h3 id="scenario-health">Healthcare compliance agent</h3>
+  <p>A clinical practice assistant that handles patient scheduling, triages symptom intake forms, drafts referral letters, and retrieves relevant treatment protocols. Handles PHI (Protected Health Information) under HIPAA — every data path must be auditable, encrypted, and access-controlled.</p>
+
+  <div class="spec spec-listen">
+    <h4>Why LTDR over a framework</h4>
+    <p>HIPAA requires a Business Associate Agreement with every vendor that touches PHI. An open-source framework with 3,000+ community plugins (12% infection rate per CVE-2026-25253) cannot satisfy this. You need to audit every line that touches patient data. A custom LTDR implementation in ~2,000 lines of Rust is auditable in a day.</p>
+  </div>
+
+  <div class="card-grid">
+    <div class="card" style="border-top:3px solid var(--listen)">
+      <h4 style="color:var(--listen)">Listen</h4>
+      <p>Secure patient portal (HTTPS-only web form) + encrypted SMS via Twilio HIPAA tier. No consumer messaging platforms — WhatsApp, Telegram, and Discord are explicitly excluded because they don't sign BAAs. Voice intake via on-premise speech-to-text (Whisper running locally, never cloud-transcribed).</p>
+    </div>
+    <div class="card" style="border-top:3px solid var(--think)">
+      <h4 style="color:var(--think)">Think</h4>
+      <p>Model provider routed through a HIPAA-compliant API endpoint (Azure OpenAI with BAA, or on-premise inference). Context assembler strips all PHI identifiers before sending to cloud models — replace names with tokens, reconstruct on response. Memory injection limited to the current patient's record.</p>
+    </div>
+    <div class="card" style="border-top:3px solid var(--do)">
+      <h4 style="color:var(--do)">Do</h4>
+      <p>Tools: EHR system queries (Epic/Cerner FHIR API), scheduling (calendar write with conflict detection), referral letter generation (template-fill, never freeform PHI in tool output), insurance eligibility check. Every tool call logged with patient ID, timestamp, and data fields accessed.</p>
+    </div>
+    <div class="card" style="border-top:3px solid var(--remember)">
+      <h4 style="color:var(--remember)">Remember</h4>
+      <p>Memory encrypted at rest (AES-256). Per-patient memory isolation — no cross-patient search. Daily notes stored in HIPAA-compliant storage with automatic retention policies (7 years). Curated memory holds care protocols and provider preferences, never patient data directly.</p>
+    </div>
+  </div>
+
+  <!-- ── Scenario 2: Financial Trading ── -->
+  <h3 id="scenario-finance">Quantitative trading assistant</h3>
+  <p>A market analysis agent that monitors real-time price feeds, evaluates options strategies against your portfolio Greeks, executes alerting rules, and drafts trade rationale memos. Needs sub-second data ingestion and must never autonomously execute trades without explicit human confirmation.</p>
+
+  <div class="spec spec-think">
+    <h4>Why LTDR over a framework</h4>
+    <p>Financial data feeds require persistent WebSocket connections with specific exchange protocols (FIX, binary). The Listen phase needs a custom adapter that speaks these protocols natively — not a consumer chat adapter. The Do phase must enforce a hard boundary: analysis tools run autonomously, but execution tools require interactive confirmation. A framework's uniform permission model can't express this split.</p>
+  </div>
+
+  <div class="card-grid">
+    <div class="card" style="border-top:3px solid var(--listen)">
+      <h4 style="color:var(--listen)">Listen</h4>
+      <p>Three adapters: (1) Market data WebSocket (exchange-native binary protocol, not HTTP). (2) CLI terminal for direct commands. (3) Telegram for mobile alerts. The market data adapter normalizes ticks into LTDR Messages with <code>metadata</code> carrying the full order book snapshot.</p>
+    </div>
+    <div class="card" style="border-top:3px solid var(--think)">
+      <h4 style="color:var(--think)">Think</h4>
+      <p>Local model (MLX on Apple Silicon) for real-time pattern recognition — cloud latency is unacceptable for market data. Cloud model (Claude) for complex multi-leg options analysis when latency isn't critical. Context includes current portfolio positions, Greeks, and active alerts from memory.</p>
+    </div>
+    <div class="card" style="border-top:3px solid var(--do)">
+      <h4 style="color:var(--do)">Do</h4>
+      <p><strong>Two trust tiers.</strong> Tier 1 (autonomous): price alerts, volatility calculations, P&L snapshots, technical indicator computation. Tier 2 (confirmation required): order placement, position modification, fund transfer. Tier 2 tools send a confirmation message to Telegram and block until the user responds.</p>
+    </div>
+    <div class="card" style="border-top:3px solid var(--remember)">
+      <h4 style="color:var(--remember)">Remember</h4>
+      <p>Daily notes capture every trade rationale, market observation, and strategy adjustment — a built-in trading journal. Curated memory holds your risk parameters, position sizing rules, and historical strategy performance. Search surfaces past rationale: "Why did I exit that SPY put spread in January?"</p>
+    </div>
+  </div>
+
+  <!-- ── Scenario 3: DevOps/SRE ── -->
+  <h3 id="scenario-devops">SRE on-call incident responder</h3>
+  <p>An operations agent that receives PagerDuty alerts, triages severity, executes diagnostic runbooks, correlates symptoms across services, and drafts incident postmortems. Runs in your infrastructure VPC — never routes production telemetry through external services.</p>
+
+  <div class="spec spec-do">
+    <h4>Why LTDR over a framework</h4>
+    <p>Incident response tools need direct access to internal APIs (Kubernetes, Prometheus, CloudWatch) that sit behind VPC boundaries. The agent must run inside your network perimeter — not on a developer's laptop connecting outward. A custom LTDR deployment as a container in your infrastructure cluster satisfies this. Additionally, shell execution during an incident must be tightly scoped: read-only diagnostic commands, never mutating operations, unless the operator explicitly escalates.</p>
+  </div>
+
+  <div class="card-grid">
+    <div class="card" style="border-top:3px solid var(--listen)">
+      <h4 style="color:var(--listen)">Listen</h4>
+      <p>Webhook adapter receiving PagerDuty/OpsGenie alerts (JSON payload → LTDR Message). Slack adapter for interactive triage in the incident channel. CLI adapter on a bastion host for direct operator commands. Each adapter tags messages with severity level and affected service.</p>
+    </div>
+    <div class="card" style="border-top:3px solid var(--think)">
+      <h4 style="color:var(--think)">Think</h4>
+      <p>Context assembler injects the on-call runbook for the affected service, recent deployment history (from memory), and current service dependency graph. Model reasons about which diagnostic steps to run and in what order. Chain-of-thought is logged for the postmortem.</p>
+    </div>
+    <div class="card" style="border-top:3px solid var(--do)">
+      <h4 style="color:var(--do)">Do</h4>
+      <p>Tools: <code>kubectl get pods</code> (read-only), Prometheus range queries, CloudWatch log tailing, deployment history lookup, Slack message posting. All tools run with read-only Kubernetes RBAC. Mutating operations (<code>kubectl rollout restart</code>) require operator confirmation via Slack reaction.</p>
+    </div>
+    <div class="card" style="border-top:3px solid var(--remember)">
+      <h4 style="color:var(--remember)">Remember</h4>
+      <p>Daily notes become the incident timeline automatically. Curated memory holds: service ownership map, known failure modes per service, past incident patterns ("Redis connection exhaustion happened 3 times in Q1 — always check max-connections first"). Postmortem drafts pull directly from the daily notes.</p>
+    </div>
+  </div>
+
+  <!-- ── Scenario 4: Agricultural/Homestead ── -->
+  <h3 id="scenario-farm">Permaculture &amp; homestead manager</h3>
+  <p>An offline-capable agent for managing a permaculture garden, seed library, harvest tracking, weather integration, and trade/barter inventory. Runs on a Raspberry Pi in a greenhouse with intermittent connectivity — must function without internet access for days at a time.</p>
+
+  <div class="spec spec-remember">
+    <h4>Why LTDR over a framework</h4>
+    <p>This agent must work offline. OpenClaw requires a cloud LLM API for its agent runtime — no internet, no assistant. A custom LTDR implementation with a local model (Ollama on a Pi 5, or a quantized model on Apple Silicon) keeps the Think phase running regardless of connectivity. The Remember phase uses local SQLite exclusively — no cloud embedding API needed if you run sentence-transformers locally. When connectivity returns, a sync adapter pushes daily notes to a git remote.</p>
+  </div>
+
+  <div class="card-grid">
+    <div class="card" style="border-top:3px solid var(--listen)">
+      <h4 style="color:var(--listen)">Listen</h4>
+      <p>CLI adapter on the Pi terminal. Local web UI (served via LAN). Optional: Telegram adapter that queues messages when offline and syncs when connectivity returns. IoT sensor adapter reading soil moisture, temperature, and light levels from GPIO/I2C sensors — each reading becomes an LTDR Message.</p>
+    </div>
+    <div class="card" style="border-top:3px solid var(--think)">
+      <h4 style="color:var(--think)">Think</h4>
+      <p>Local model only — Qwen3 30B-A3B via Ollama (MoE for fast prefill on limited hardware) or a smaller 7B model on Pi 5. Context includes current season, active plantings from memory, recent sensor readings, and the planting calendar. No cloud dependency.</p>
+    </div>
+    <div class="card" style="border-top:3px solid var(--do)">
+      <h4 style="color:var(--do)">Do</h4>
+      <p>Tools: Weather API (cached, with graceful offline fallback to last-known forecast). Seed database queries (local SQLite: variety, days-to-maturity, companion plants, trade value). Harvest logger (append to CSV). Irrigation controller (GPIO relay). Planting calendar generator (frost dates + succession intervals).</p>
+    </div>
+    <div class="card" style="border-top:3px solid var(--remember)">
+      <h4 style="color:var(--remember)">Remember</h4>
+      <p>Daily notes capture: plantings, harvests, pest observations, weather notes, barter transactions. Curated memory holds: perennial locations, soil amendment history, seed saving schedules, trade partner preferences. Multi-year memory enables pattern recognition: "Tomato blight appeared in the same bed three years running — rotate to legumes."</p>
+    </div>
+  </div>
+
+  <!-- ── Scenario 5: Legal Practice ── -->
+  <h3 id="scenario-legal">Legal practice assistant</h3>
+  <p>A law firm agent that manages case timelines, reviews document discovery, drafts correspondence, tracks billable hours, and retrieves relevant precedent. Client communications are protected by attorney-client privilege — the agent must enforce strict data isolation between matters.</p>
+
+  <div class="spec spec-think">
+    <h4>Why LTDR over a framework</h4>
+    <p>Attorney-client privilege requires that no client's data is ever accessible in another client's context. OpenClaw's memory search operates across all files in the workspace — a single workspace per firm means one client's privileged information could surface in another client's session. A custom LTDR implementation partitions memory by matter ID: each client/matter gets its own workspace directory, its own search index, and its own session scope. Cross-matter search is architecturally impossible, not just policy-blocked.</p>
+  </div>
+
+  <div class="card-grid">
+    <div class="card" style="border-top:3px solid var(--listen)">
+      <h4 style="color:var(--listen)">Listen</h4>
+      <p>Encrypted email adapter (IMAP/S with per-matter routing rules). Secure client portal (web form with matter ID authentication). Internal Slack for attorney collaboration. Every inbound message is tagged with a matter ID that determines which workspace and session it routes to.</p>
+    </div>
+    <div class="card" style="border-top:3px solid var(--think)">
+      <h4 style="color:var(--think)">Think</h4>
+      <p>Context assembler loads ONLY the current matter's memory — workspace isolation enforced at the filesystem level. Model provider uses a firm-hosted API endpoint (no client data to consumer cloud). Persona includes jurisdiction-specific rules and the firm's style guide for correspondence.</p>
+    </div>
+    <div class="card" style="border-top:3px solid var(--do)">
+      <h4 style="color:var(--do)">Do</h4>
+      <p>Tools: Case management system API (Clio, PracticePanther). Document comparison (diff two contract versions). Precedent search (local vector index of firm's case library). Billable time logger (auto-tracks agent interaction time per matter). Calendar/deadline management with statute of limitations alerts.</p>
+    </div>
+    <div class="card" style="border-top:3px solid var(--remember)">
+      <h4 style="color:var(--remember)">Remember</h4>
+      <p>Per-matter workspace: <code>~/.firm/matters/{matter_id}/</code> — each with its own MEMORY.md, daily notes, and search index. Firm-wide memory (non-privileged) holds: court procedures, filing requirements, judge preferences. Retention policies auto-archive closed matters after the applicable retention period.</p>
+    </div>
+  </div>
+
+  <!-- ── Scenario 6: Journalism/OSINT ── -->
+  <h3 id="scenario-osint">Investigative research &amp; OSINT agent</h3>
+  <p>A research agent that monitors public data sources, correlates entities across datasets, tracks story leads, and manages source relationships. Source protection is paramount — the agent must never leak source identities across investigations or to external services.</p>
+
+  <div class="spec spec-do">
+    <h4>Why LTDR over a framework</h4>
+    <p>Source protection requires that the agent's network traffic is forensically clean — no DNS leaks, no unencrypted metadata, no third-party analytics. OpenClaw's skill ecosystem has had supply chain attacks (CVE-2026-25253) that exfiltrated data to unknown endpoints. A custom LTDR implementation routes ALL network traffic through Tor or a journalist-controlled VPN, with a deny-by-default firewall that blocks every host not explicitly approved. The Listen phase never touches consumer platforms that log metadata.</p>
+  </div>
+
+  <div class="card-grid">
+    <div class="card" style="border-top:3px solid var(--listen)">
+      <h4 style="color:var(--listen)">Listen</h4>
+      <p>Signal adapter (end-to-end encrypted, metadata-resistant) for source communication. Secure drop web form (onion service) for anonymous tips. CLI on an air-gapped workstation for analysis sessions. No Telegram, no Discord, no Slack — metadata exposure is unacceptable.</p>
+    </div>
+    <div class="card" style="border-top:3px solid var(--think)">
+      <h4 style="color:var(--think)">Think</h4>
+      <p>Local model exclusively — no cloud API calls during active investigation (prevents subpoena-discoverable server logs at a third party). Context includes the investigation timeline, entity relationship map from memory, and known public records. Model runs on local hardware with full-disk encryption.</p>
+    </div>
+    <div class="card" style="border-top:3px solid var(--do)">
+      <h4 style="color:var(--do)">Do</h4>
+      <p>Tools: Public records search (PACER, SEC EDGAR, corporate registries) — all via Tor. Shodan/Censys queries for infrastructure correlation. Entity extraction (local NER model, never cloud). Link analysis visualization (local graph renderer). All tools route through the controlled network proxy.</p>
+    </div>
+    <div class="card" style="border-top:3px solid var(--remember)">
+      <h4 style="color:var(--remember)">Remember</h4>
+      <p>Per-investigation workspace with encrypted filesystem (LUKS or FileVault). Source identities stored only in a separate, manually-accessed vault — never in the agent's searchable memory. Daily notes capture leads, dead ends, and verification status. Entity graph stored as structured data for cross-reference queries.</p>
+    </div>
+  </div>
+
+  <!-- ── Scenario 7: Government Cloud ── -->
+  <h3 id="scenario-govcloud">Government cloud infrastructure agent</h3>
+  <p>An infrastructure-as-code assistant operating within a government cloud environment (FedRAMP, CMMC, IL4/IL5). Manages Terraform plans, reviews security configurations, generates compliance documentation, and monitors drift across multi-account landing zones.</p>
+
+  <div class="spec spec-listen">
+    <h4>Why LTDR over a framework</h4>
+    <p>Government cloud environments have strict network egress controls — no arbitrary outbound connections. OpenClaw's plugin ecosystem, auto-update mechanism, and npm dependency chain would fail compliance review immediately. A custom LTDR implementation compiles to a single auditable binary (Go or Rust), runs inside the VPC with no internet egress except to the approved LLM API endpoint, and produces the audit trail required by CMMC Level 2 controls (AU-2, AU-3, AU-6, AU-12).</p>
+  </div>
+
+  <div class="card-grid">
+    <div class="card" style="border-top:3px solid var(--listen)">
+      <h4 style="color:var(--listen)">Listen</h4>
+      <p>Microsoft Teams adapter (the standard in government environments) via approved Bot Framework registration. CLI adapter on authorized administrator workstations. Webhook adapter for CI/CD pipeline triggers (GitLab/GitHub Enterprise). No consumer messaging platforms permitted in the authorization boundary.</p>
+    </div>
+    <div class="card" style="border-top:3px solid var(--think)">
+      <h4 style="color:var(--think)">Think</h4>
+      <p>Model provider routed through the cloud provider's FedRAMP-authorized AI endpoint (Azure Government OpenAI, or an on-premise model in the enclave). Context includes the current Terraform state, active security findings, and the compliance control matrix from memory. No data leaves the authorization boundary.</p>
+    </div>
+    <div class="card" style="border-top:3px solid var(--do)">
+      <h4 style="color:var(--do)">Do</h4>
+      <p>Tools: <code>terraform plan</code> (read-only analysis, never auto-apply). Security Hub finding aggregation. Config rule evaluation against CMMC/NIST 800-171 controls. IAM policy analyzer (detect overly permissive roles). Compliance report generator (Markdown → PDF for auditors). All tools scoped to read-only IAM roles; write operations require human approval via Teams.</p>
+    </div>
+    <div class="card" style="border-top:3px solid var(--remember)">
+      <h4 style="color:var(--remember)">Remember</h4>
+      <p>Daily notes capture every infrastructure change, security finding, and remediation action — the continuous monitoring artifact auditors need. Curated memory holds: account topology, service ownership, approved architectural patterns, exception justifications. Memory stored in an encrypted database with row-level access control — different teams see only their accounts.</p>
+    </div>
+  </div>
+
+  <!-- ── Scenario 8: Education ── -->
+  <h3 id="scenario-education">Adaptive learning tutor</h3>
+  <p>A per-student tutoring agent that adapts to learning pace, identifies knowledge gaps, generates practice problems, and reports progress to instructors. Handles student data under FERPA (Family Educational Rights and Privacy Act) — data isolation between students is legally required.</p>
+
+  <div class="spec spec-remember">
+    <h4>Why LTDR over a framework</h4>
+    <p>FERPA requires that student educational records are not disclosed without consent. A shared-workspace agent where one student's struggle with quadratic equations could surface in another student's context is a FERPA violation. The LTDR approach: per-student workspace with isolated memory, shared curriculum content (read-only, not per-student), and instructor-scoped aggregate views that strip PII before reporting.</p>
+  </div>
+
+  <div class="card-grid">
+    <div class="card" style="border-top:3px solid var(--listen)">
+      <h4 style="color:var(--listen)">Listen</h4>
+      <p>School LMS integration (Canvas, Moodle) — student messages arrive tagged with student ID and course. Web chat widget embedded in the course page (authenticated via school SSO). No consumer messaging — students interact through the school's authorized platforms only.</p>
+    </div>
+    <div class="card" style="border-top:3px solid var(--think)">
+      <h4 style="color:var(--think)">Think</h4>
+      <p>Context assembler loads the student's current knowledge model from memory (which concepts they've mastered, which they're struggling with), the relevant curriculum unit, and their learning preference profile. Model adjusts explanation complexity based on demonstrated understanding — concrete examples for visual learners, formal proofs for abstract thinkers.</p>
+    </div>
+    <div class="card" style="border-top:3px solid var(--do)">
+      <h4 style="color:var(--do)">Do</h4>
+      <p>Tools: Problem generator (parameterized templates per curriculum standard). Solution checker (symbolic math engine, not LLM — deterministic correctness). Hint scaffolder (progressive disclosure: nudge → concept → worked example). Progress reporter (aggregate stats to instructor, PII stripped). Spaced repetition scheduler.</p>
+    </div>
+    <div class="card" style="border-top:3px solid var(--remember)">
+      <h4 style="color:var(--remember)">Remember</h4>
+      <p>Per-student workspace: <code>/students/{student_id}/</code>. Daily notes track: problems attempted, time-to-solution, hint usage, misconception patterns. Curated memory holds the evolving knowledge model: "Mastered: linear equations, slope-intercept form. Struggling: systems of equations — consistently confuses substitution with elimination." Instructor view aggregates across students without exposing individual session data.</p>
+    </div>
+  </div>
+
+  <!-- ── Summary table ── -->
+  <h3>Scenario comparison</h3>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Scenario</th><th>Primary constraint</th><th>Key LTDR adaptation</th><th>Why not OpenClaw</th></tr></thead>
+      <tbody>
+        <tr><td>Healthcare</td><td>HIPAA / PHI</td><td>Encrypted per-patient memory, PHI stripping before cloud calls</td><td>Can't sign BAA with an open-source framework's plugin ecosystem</td></tr>
+        <tr><td>Trading</td><td>Latency + confirmation gates</td><td>Split trust tiers (autonomous analysis, gated execution)</td><td>Exchange binary protocols need native adapters, not chat adapters</td></tr>
+        <tr><td>SRE on-call</td><td>VPC-internal + read-only defaults</td><td>Runs inside infrastructure cluster, read-only K8s RBAC</td><td>Must deploy inside network perimeter, not on developer laptop</td></tr>
+        <tr><td>Permaculture</td><td>Offline-first</td><td>Local model, local embeddings, GPIO sensor adapters</td><td>OpenClaw requires cloud LLM API — no internet, no assistant</td></tr>
+        <tr><td>Legal</td><td>Attorney-client privilege</td><td>Per-matter workspace isolation, cross-matter search impossible</td><td>Shared workspace memory search leaks across clients</td></tr>
+        <tr><td>OSINT</td><td>Source protection</td><td>Tor-routed tools, local-only model, encrypted workspaces</td><td>Plugin supply chain attacks (CVE-2026-25253) are disqualifying</td></tr>
+        <tr><td>Government cloud</td><td>FedRAMP / CMMC</td><td>Single auditable binary, no internet egress, audit trail</td><td>npm dependency chain fails compliance review</td></tr>
+        <tr><td>Education</td><td>FERPA / student data</td><td>Per-student workspace isolation, PII-stripped aggregation</td><td>Shared memory across students is a FERPA violation</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout callout-neutral" style="margin-top:1.5rem">
+    <strong>The common thread:</strong> Every scenario requires a domain-specific constraint that a general-purpose framework cannot express in its permission model. LTDR gives you the architectural pattern; you implement the constraints your domain demands. The standard doesn't tell you <em>how</em> to sandbox — it tells you <em>where</em> the sandbox boundary goes and what contract it must satisfy. Your compliance officer, your security team, and your auditors can review 2,000 lines of purpose-built code. They cannot review 430,000 lines of community-contributed TypeScript.
+  </div>
+</section>
+
+</div>
+
+<footer>
+  <p>LTDR Specification v0.1.0 — An open standard for personal AI assistants</p>
+  <p style="margin-top:4px">Derived from architectural patterns pioneered by the OpenClaw community. This specification is implementation-independent.</p>
+  <p style="margin-top:4px">License: <a href="https://creativecommons.org/licenses/by/4.0/" style="color:var(--accent-text)">CC-BY-4.0</a></p>
+</footer>
+
+<!-- ── Tab switcher ── -->
+<script>
+function showTab(btn, group) {
+  const lang = btn.textContent.trim();
+  const parent = btn.closest('.code-group');
+  parent.querySelectorAll('.code-tab').forEach(t => t.classList.remove('active'));
+  parent.querySelectorAll('.code-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  parent.querySelectorAll(`.code-panel[data-group="${group}"]`).forEach(p => {
+    if (p.dataset.lang === lang) p.classList.add('active');
+  });
+}
+// TOC scroll spy
+const sections = document.querySelectorAll('.phase[id]');
+const tocLinks = document.querySelectorAll('.toc-sticky a');
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      tocLinks.forEach(l => l.querySelector('.toc-dot').style.transform = 'scale(1)');
+      const a = document.querySelector(`.toc-sticky a[href="#${e.target.id}"]`);
+      if (a) a.querySelector('.toc-dot').style.transform = 'scale(1.8)';
+    }
+  });
+}, { rootMargin: '-30% 0px -60% 0px' });
+sections.forEach(s => obs.observe(s));
+</script>
+
+</body>
+</html>
